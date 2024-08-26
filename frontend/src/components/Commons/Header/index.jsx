@@ -5,7 +5,7 @@ function Header() {
   return (
     <header className="header">
       <div className="container">
-        <h1 className="logo">ReadMe</h1>
+        <img src="public/logo1.png" alt="ReadMe" className="logo" />
         <nav>
           <ul>
             <li>
@@ -15,7 +15,7 @@ function Header() {
               <a href="#about">About</a>
             </li>
             <Link to="/editor" className="btn-nav-main">
-              Editor
+              Generate
             </Link>
           </ul>
         </nav>

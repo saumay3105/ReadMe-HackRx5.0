@@ -14,13 +14,13 @@ function Home() {
             <h1 className="welcome-heading">
               Welcome to <span className="clip-kadabra">ReadMe</span>
             </h1>
-            <p>Unleash the Magic of AI-Powered Video Editing</p>
+            <p>Unleash the Magic of AI-Powered Text-to-Video Generation</p>
             <div className="buttons">
               <a href="#features" className="btn-secondary">
                 Discover Features
               </a>
               <Link to="/editor" className="btn-primary">
-                Start Editing
+                Generate
               </Link>
             </div>
           </div>
@@ -31,30 +31,30 @@ function Home() {
           <div className="features-container">
             <div className="features-grid">
               <FeatureCard
-                title="Precision Editing"
-                description="Trim your videos to perfection with our precise cutting tools. Seamlessly merge multiple clips into one cohesive video. Enhance your visuals with a wide range of background music and sound effects."
+                title="Text-to-Video"
+                description="Seamlessly transform text from PDFs, brochures, and other documents into engaging videos. Say goodbye to monotonous reading and embrace a more dynamic way to digest information."
               />
               <FeatureCard
-                title="Captivating Visuals"
-                description="Add dynamic text overlays to your videos with stylish fonts and animations. Create engaging titles, subtitles, and call-to-actions. Customize text color, size, and position for a professional look."
+                title="Interactive Quizzes"
+                description="After watching the videos, users can test their understanding with automatically generated quizzes. This feature ensures that viewers not only watch but also retain the information presented, making learning both effective and interactive."
               />
               <FeatureCard
-                title="Global Reach"
-                description="Break language barriers with our AI-powered dubbing feature. Translate your videos into multiple languages effortlessly. Reach a wider audience and expand your global impact."
+                title="Cross-Language Narration"
+                description="Expand your reach by dubbing video content into different languages. This feature allows users to cater to a diverse audience, making your content more accessible and impactful across linguistic boundaries"
               />
             </div>
           </div>
         </section>
         <section id="about" className="about">
           <div className="container">
-            <h2>About Clip Kadabra</h2>
+            <h2>About ReadMe</h2>
             <p>
-              Clip Kadabra is your ultimate AI-powered video editing software.
-              Designed to make video editing simple, fast, and fun, Clip Kadabra
-              empowers you to create professional-quality videos with ease.
-              Whether you're a seasoned editor or just getting started, our
-              intuitive tools and magical features will help you bring your
-              vision to life.
+            Are you tired of reading through lengthy documents without fully grasping the content? 
+            Meet ReadMe—a cutting-edge tool designed to transform your text into engaging videos.
+            With ReadMe, you can effortlessly convert any text into a video format, making it easier
+            to absorb information. But that's not all. Test your understanding with interactive quizzes, 
+            and earn rewards as you enhance your knowledge. Experience a new way of learning with ReadMe, 
+            where text comes to life.
             </p>
           </div>
         </section>

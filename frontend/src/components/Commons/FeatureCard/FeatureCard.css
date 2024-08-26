@@ -10,6 +10,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    transition: 0.3s ease-in-out;
   }
   
   .feature-card h3 {
@@ -24,4 +25,7 @@
     font-size: 1rem;
     line-height: 1.5;
   }
-  
+  .feature-card:hover{
+    transform: scale(1.1);
+    background-color: #ff512f;
+  }
