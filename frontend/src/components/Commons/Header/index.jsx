@@ -5,7 +5,7 @@ function Header({ showNav = true }) {
   return (
     <header className="header">
       <div className="container">
-        <h1 className="logo">ReadMe</h1>
+        <img src="/logo1.png" alt="Logo" className="logo" />
         {showNav && (
           <nav>
             <ul>
@@ -15,9 +15,11 @@ function Header({ showNav = true }) {
               <li>
                 <a href="#about">About</a>
               </li>
-              <Link to="/text-to-video" className="btn-nav-main">
-                Generate
-              </Link>
+              <li>
+                <Link to="/text-to-video" className="btn-nav-main">
+                  Generate
+                </Link>
+              </li>
             </ul>
           </nav>
         )}

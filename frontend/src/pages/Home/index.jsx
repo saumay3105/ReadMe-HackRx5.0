@@ -1,5 +1,4 @@
 import Header from "@/components/Commons/Header";
-import Footer from "@/components/Commons/Footer";
 import FeatureCard from "@/components/Commons/FeatureCard";
 import { Link } from "react-router-dom";
 import "./Home.css";
@@ -7,27 +6,30 @@ import "./Home.css";
 function Home() {
   return (
     <>
-      <Header showNav = {true} />
-      <main className="homepage">
-        <section className="hero">
-          <div className="container">
-            <h1 className="welcome-heading">
-              Welcome to <span className="clip-kadabra">ReadMe</span>
-            </h1>
-            <p>Unleash the Magic of AI-Powered Text-to-Video Generation</p>
-            <div className="buttons">
-              <a href="#features" className="btn-secondary">
-                Discover Features
-              </a>
-              <Link to="/text-to-video" className="btn-primary">
-                Generate
-              </Link>
-            </div>
+      <div className="hero">
+        <video autoPlay muted loop className="background-video">
+          <source src="/bg3.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <Header showNav={true} />
+        <div className="hero-content">
+          <h1 className="welcome-heading">
+            <span className="clip-kadabra">ReadMe</span>
+          </h1>
+          <p>Unleash the Magic of AI-Powered Text-to-Video Generation</p>
+          <div className="buttons">
+            <a href="#features" className="btn-secondary">
+              Discover Features
+            </a>
+            <Link to="/text-to-video" className="btn-primary">
+              Generate
+            </Link>
           </div>
-        </section>
+        </div>
+      </div>
+      <main className="homepage">
         <section id="features" className="features">
           <h2 className="t">Magical Features</h2>
-
           <div className="features-container">
             <div className="features-grid">
               <FeatureCard
@@ -40,7 +42,7 @@ function Home() {
               />
               <FeatureCard
                 title="Cross-Language Narration"
-                description="Expand your reach by dubbing video content into different languages. This feature allows users to cater to a diverse audience, making your content more accessible and impactful across linguistic boundaries"
+                description="Expand your reach by dubbing video content into different languages. This feature allows users to cater to a diverse audience, making your content more accessible and impactful across linguistic boundaries."
               />
             </div>
           </div>
@@ -49,18 +51,16 @@ function Home() {
           <div className="container">
             <h2 className="t">About ReadMe</h2>
             <p>
-            Are you tired of reading through lengthy documents without fully grasping the content? 
-            Meet ReadMe—a cutting-edge tool designed to transform your text into engaging videos.
-            With ReadMe, you can effortlessly convert any text into a video format, making it easier
-            to absorb information. But that's not all. Test your understanding with interactive quizzes, 
-            and earn rewards as you enhance your knowledge. Experience a new way of learning with ReadMe, 
-            where text comes to life.
+              Are you tired of reading through lengthy documents without fully grasping the content? 
+              Meet ReadMe—a cutting-edge tool designed to transform your text into engaging videos.
+              With ReadMe, you can effortlessly convert any text into a video format, making it easier
+              to absorb information. But that's not all. Test your understanding with interactive quizzes, 
+              and earn rewards as you enhance your knowledge. Experience a new way of learning with ReadMe, 
+              where text comes to life.
             </p>
           </div>
         </section>
       </main>
-      <Footer/>
-      {/* <Footer /> */}
     </>
   );
 }

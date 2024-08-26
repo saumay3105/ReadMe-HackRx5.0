@@ -1,5 +1,6 @@
 .feature-card {
-    background-color: #2e2e2e;
+    background: rgb(42,213,223);
+    background: radial-gradient(circle, rgba(42,213,223,1) 6%, rgba(255,255,255,100) 53%);
     border-radius: 16px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 24px;
@@ -14,18 +15,17 @@
   }
   
   .feature-card h3 {
-    color: #fff;
+    color: rgb(35, 87, 140);
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 12px;
   }
   
   .feature-card p {
-    color: #e7e7e7;
+    color: #020000;
     font-size: 1rem;
     line-height: 1.5;
   }
   .feature-card:hover{
     transform: scale(1.1);
-    background-color: #ff512f;
   }
