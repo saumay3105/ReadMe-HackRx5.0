@@ -1,0 +1,13 @@
+.slider-container {
+    color: rgb(9, 59, 84);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .slider {
+    width: 40%;
+    margin-top: 10px;
+  }
+  

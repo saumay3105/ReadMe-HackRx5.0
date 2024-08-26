@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './upload.css';
 
 const FileUpload = () => {
@@ -10,12 +12,19 @@ const FileUpload = () => {
 
   const handleUpload = () => {
     if (selectedFiles.length === 0) {
-      alert('Please select files to upload');
+      toast.error('Please select files to upload',{position:'top-right'});
       return;
     }
-
-    //backend
+    toast.success('Files uploaded successfully!',{position : "bottom-center"});
     console.log('Files to upload:', selectedFiles);
+  };
+
+  const handleGetVideo = () => {
+    if (selectedFiles.length === 0) {
+      toast.error('Please select files to upload',{position:'top-right'});
+      return;
+    }
+    toast.info('processing',{position:"bottom-center"});
   };
 
   return (
@@ -36,9 +45,17 @@ const FileUpload = () => {
           </ul>
         )}
       </div>
-      <button className="upload-button" onClick={handleUpload}>
-        Upload
-      </button>
+      <div className='buttons'>
+        <button className="upload-button" onClick={handleUpload}>
+          Upload
+        </button>
+        <button className="video" onClick={handleGetVideo}>
+          Get Video
+        </button>
+      </div>
+
+      {/* ToastContainer to display notifications */}
+      <ToastContainer />
     </div>
   );
 };

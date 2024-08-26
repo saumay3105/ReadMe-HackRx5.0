@@ -1,5 +1,39 @@
+.text-to-video-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .file-upload-container {
   display: flex;
+  flex-direction: column; 
+  align-items: center;
   justify-content: center;
-  margin-left: -20px;
+  margin-top: -20px;
+  width: 80%; 
+}
+
+.file-upload-container > * {
+  margin-bottom: 20px; 
+  width: 100%; 
+}
+
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+@media (min-width: 768px) {
+  .file-upload-container {
+    width: 60%;
+  }
 }

@@ -1,53 +1,74 @@
 .upload-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #333333;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 400px;
-    margin: 50px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .file-input {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    cursor: pointer;
-  }
-  
-  .file-preview ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .file-preview li {
-    color: #555;
-    margin-bottom: 5px;
-    background-color: #eaeaea;
-    padding: 8px;
-    border-radius: 4px;
-  }
-  
-  .upload-button {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .upload-button:hover {
-    background-color: #0056b3;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 50px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: rgb(35, 87, 140);
+  margin-bottom: 20px;
+}
+
+.file-input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  background-color: white;
+  color: rgb(35, 87, 140);
+  font-size: 16px;
+}
+
+.file-input::-webkit-file-upload-button {
+  background: rgb(35, 87, 140);
+  color: white;
+  border-radius: 20px;
+  transition: 0.03s;
+}
+
+.file-preview ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.file-preview li {
+  color: rgb(35, 87, 140);
+  margin-bottom: 5px;
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.upload-button {
+  border: 2px solid rgb(35, 87, 140);
+  color: rgb(35, 87, 140);
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.upload-button:hover {
+  background-color: rgb(35, 87, 140);
+  color: #fff;
+}
+
+.video {
+  border: 2px solid rgb(35, 87, 140);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: rgb(35, 87, 140);
+}
+
+.video:hover {
+  background-color: white;
+  color: rgb(35, 87, 140);
+}
