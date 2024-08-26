@@ -7,7 +7,7 @@ import "./Home.css";
 function Home() {
   return (
     <>
-      <Header />
+      <Header showNav = {true} />
       <main className="homepage">
         <section className="hero">
           <div className="container">
@@ -19,14 +19,14 @@ function Home() {
               <a href="#features" className="btn-secondary">
                 Discover Features
               </a>
-              <Link to="/editor" className="btn-primary">
+              <Link to="/text-to-video" className="btn-primary">
                 Generate
               </Link>
             </div>
           </div>
         </section>
         <section id="features" className="features">
-          <h2>Magical Features</h2>
+          <h2 className="t">Magical Features</h2>
 
           <div className="features-container">
             <div className="features-grid">
@@ -47,7 +47,7 @@ function Home() {
         </section>
         <section id="about" className="about">
           <div className="container">
-            <h2>About ReadMe</h2>
+            <h2 className="t">About ReadMe</h2>
             <p>
             Are you tired of reading through lengthy documents without fully grasping the content? 
             Meet ReadMe—a cutting-edge tool designed to transform your text into engaging videos.
@@ -59,6 +59,7 @@ function Home() {
           </div>
         </section>
       </main>
+      <Footer/>
       {/* <Footer /> */}
     </>
   );

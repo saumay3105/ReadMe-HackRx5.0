@@ -84,9 +84,7 @@
     margin: 0 auto;
   }
   
-  h2 {
-    color: #e54620;
-  }
+ 
   
   .about h2 {
     font-weight: bold;
@@ -138,4 +136,6 @@
     background-color: #ff512f;
     color: #fff;
   }
-  
+  .t {
+    color: #e54620;
+  }

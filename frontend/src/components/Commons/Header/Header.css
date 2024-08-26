@@ -55,6 +55,9 @@
     transition: all 0.2s ease-in-out;
     text-decoration: none;
   }
+  .logo{
+    color: #007bff;
+  }
   .logo:hover{
     transform: scale(1.1);
   }
