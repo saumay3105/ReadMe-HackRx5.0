@@ -58,50 +58,54 @@ function Quiz() {
         <source src="/bg3.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <Header showNav={false} />
-      {isQuizFinished ? (
-        <div className="result-container">
-          <h2>Your Score: {points} out of {quizData.length}</h2>
-        </div>
-      ) : (
-        <div className="question-container">
-          <div className="score">Score: {points}</div>
-          <Question
-            title={`Question ${currentQuestionIndex + 1}`}
-            question={quizData[currentQuestionIndex].question}
-            options={quizData[currentQuestionIndex].options}
-            selectedOption={selectedOptions[currentQuestionIndex] || ""}
-            handleOptionChange={handleOptionChange}
-            handleSubmit={handleSubmit}
-          />
-          <div className="navigation-buttons">
-            <button
-              className="prev-btn"
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0}
-            >
-              Previous
-            </button>
-            {currentQuestionIndex < quizData.length - 1 ? (
-              <button
-                className="next-btn"
-                onClick={handleNext}
-                disabled={!selectedOptions[currentQuestionIndex]}
-              >
-                Next
-              </button>
-            ) : (
-              <button
-                className="submit-btn"
-                onClick={handleSubmit}
-                disabled={!selectedOptions[currentQuestionIndex]}
-              >
-                Submit
-              </button>
-            )}
+      <div className="head">
+        <Header showNav={false} />
+      </div>
+      <div className="main">
+        {isQuizFinished ? (
+          <div className="result-container">
+            <h2>Your Score: {points} out of {quizData.length}</h2>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="question-container">
+            <div className="score">Score: {points}</div>
+            <Question
+              title={`Question ${currentQuestionIndex + 1}`}
+              question={quizData[currentQuestionIndex].question}
+              options={quizData[currentQuestionIndex].options}
+              selectedOption={selectedOptions[currentQuestionIndex] || ""}
+              handleOptionChange={handleOptionChange}
+              handleSubmit={handleSubmit}
+            />
+            <div className="navigation-buttons">
+              <button
+                className="prev-btn"
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+              >
+                Previous
+              </button>
+              {currentQuestionIndex < quizData.length - 1 ? (
+                <button
+                  className="next-btn"
+                  onClick={handleNext}
+                  disabled={!selectedOptions[currentQuestionIndex]}
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  className="submit-btn"
+                  onClick={handleSubmit}
+                  disabled={!selectedOptions[currentQuestionIndex]}
+                >
+                  Submit
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
