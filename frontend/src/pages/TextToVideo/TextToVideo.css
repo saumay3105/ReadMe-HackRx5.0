@@ -37,3 +37,18 @@
     width: 60%;
   }
 }
+.btn-primary {
+  width: auto;
+  background: rgb(35, 87, 140);
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  align-items: center;
+}
+
+.btn-primary:hover {
+  background-color: rgb(1, 9, 19);
+  color: #fff;
+}
