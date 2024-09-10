@@ -24,10 +24,10 @@ def generate_script_task(job_id: uuid.UUID):
 
         # Update job status to 'successful' and save the generated script
         job.status = "successful"
-        job.generated_script = script
+        job.script = script
     except Exception as e:
         job.status = "failed"
-        job.generated_script = None
+        job.script = None
         print(f"Error processing document: {str(e)}")
 
     finally:

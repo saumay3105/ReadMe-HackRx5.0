@@ -1,10 +1,26 @@
+from datetime import datetime
+import os
 import uuid
 from django.db import models
 
 
+def upload_to_unique_filename(instance, filename):
+    # Get the file name and extension
+    base_filename, extension = os.path.splitext(filename)
+
+    # Get the current timestamp as a string
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+    # Combine the original filename with the timestamp and the extension
+    unique_filename = f"{base_filename}_{timestamp}{extension}"
+
+    # Save the file in the 'uploaded_documents/' folder
+    return os.path.join("uploaded_documents", unique_filename)
+
+
 class DocumentProcessingJob(models.Model):
     job_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    file = models.FileField(upload_to="uploaded_documents/")
+    file = models.FileField(upload_to=upload_to_unique_filename)
     status = models.CharField(
         max_length=50,
         choices=[
