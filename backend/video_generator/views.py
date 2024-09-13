@@ -1,3 +1,4 @@
+import logging
 import uuid
 from django.http import HttpRequest
 from rest_framework.decorators import api_view
@@ -43,6 +44,7 @@ def upload_document(request: HttpRequest):
         )
 
     except Exception as e:
+        logging.error(e)
         return Response(
             {"status": "error", "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
