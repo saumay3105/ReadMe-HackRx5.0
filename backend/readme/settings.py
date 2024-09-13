@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "users",
     "video_generator",
     "quiz",
@@ -53,7 +54,12 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = "readme.urls"
 
@@ -181,6 +187,7 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "debug.log"),
             "formatter": "standard",
             "encoding": "utf8",
+            "delay": True,
         },
         "info_log": {
             "level": "INFO",
@@ -191,6 +198,7 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "info.log"),
             "formatter": "standard",
             "encoding": "utf8",
+            "delay": True,
         },
         "error_log": {
             "level": "ERROR",
@@ -201,6 +209,7 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "error.log"),
             "formatter": "standard",
             "encoding": "utf8",
+            "delay": True,
         },
         "console": {
             "level": "DEBUG",

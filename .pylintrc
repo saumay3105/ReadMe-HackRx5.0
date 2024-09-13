@@ -479,6 +479,8 @@ disable=raw-checker-failed, # raw-checker-failed: Indicates when a raw checker h
       too-few-public-methods,
       # Refers to a specific naming convention violation, like an invalid variable, function, or class name.
       C0103,
+      # Refers to unused argument of a function
+      unused-argument
 
 
 # ignore argument
