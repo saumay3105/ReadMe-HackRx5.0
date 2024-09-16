@@ -49,7 +49,7 @@ const FileUpload = () => {
 
   // Placeholder for handling video retrieval (if needed)
   const handleGetVideo = () => {
-    toast.info("Get Video functionality is not implemented yet.", {
+    toast.info("The function is being updated currently.", {
       position: "top-right",
     });
   };
