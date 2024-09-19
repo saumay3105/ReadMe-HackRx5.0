@@ -7,3 +7,9 @@ pylint==3.2.7
 pylint-django==2.5.5
 watchdog==5.0.2
 colorlog==6.8.2
+pdfplumber
+# langchain
+# langchain-google-genai
+# langchain_community
+python-dotenv
+google-generativeai

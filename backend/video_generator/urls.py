@@ -13,4 +13,9 @@ urlpatterns = [
         views.get_generated_script,
         name="get_generated_script",
     ),
+    path(
+        "submit-script/<uuid:job_id>/",
+        views.submit_script,
+        name="submit_script",
+    ),
 ]

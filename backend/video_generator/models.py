@@ -50,3 +50,13 @@ class VideoProcessingJob(models.Model):
         upload_to="generated_videos/", null=True, blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "job_id": str(self.job_id),
+            "status": self.status,
+            "generated_video": (
+                str(self.generated_video) if self.generated_video else None
+            ),
+        }

@@ -124,9 +124,9 @@ def get_generated_script(request: HttpRequest, job_id: uuid.UUID):
 
 
 @api_view(["POST"])
-def submit_script(request: HttpRequest, document_job_id):
+def submit_script(request: HttpRequest, job_id):
     try:
-        document_job = DocumentProcessingJob.objects.get(job_id=document_job_id)
+        document_job = DocumentProcessingJob.objects.get(job_id=job_id)
         if document_job.status != "successful":
             return Response(
                 {
@@ -152,7 +152,7 @@ def submit_script(request: HttpRequest, document_job_id):
         )
 
         # Trigger background video generation process
-        process_video_task.delay(video_job.job_id, final_script)
+        # process_video_task.delay(video_job.job_id, final_script)
 
         return Response(
             {

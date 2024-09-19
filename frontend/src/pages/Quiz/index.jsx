@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Quiz.css";
 import Question from "../../components/Questions";
-import quizData from "./quizData";
 import Header from "../../components/Commons/Header";
+
 function Quiz() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [points, setPoints] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isQuizFinished, setIsQuizFinished] = useState(false);
+  const [quizData, setQuizData] = useState([]);
+
+  useEffect(() => {
+    // Fetch quiz questions from localStorage
+    const fetchedQuizData = JSON.parse(localStorage.getItem("quizQuestions"));
+
+    if (fetchedQuizData) {
+      setQuizData(fetchedQuizData);
+    } else {
+      console.error("No quiz questions found.");
+    }
+  }, []);
 
   const handleOptionChange = (e) => {
     const { value } = e.target;
@@ -51,8 +63,13 @@ function Quiz() {
     setPoints(score);
   };
 
+  if (quizData.length === 0) {
+    return <div>Loading quiz...</div>;
+  }
+
+  const currentQuestion = JSON.parse(quizData)[currentQuestionIndex];
+
   return (
-    
     <div className="quiz-container">
       <video autoPlay muted loop className="background-video">
         <source src="/bg3.mp4" type="video/mp4" />
@@ -64,15 +81,17 @@ function Quiz() {
       <div className="main">
         {isQuizFinished ? (
           <div className="result-container">
-            <h2>Your Score: {points} out of {quizData.length}</h2>
+            <h2>
+              Your Score: {points} out of {quizData.length}
+            </h2>
           </div>
         ) : (
           <div className="question-container">
             <div className="score">Score: {points}</div>
             <Question
               title={`Question ${currentQuestionIndex + 1}`}
-              question={quizData[currentQuestionIndex].question}
-              options={quizData[currentQuestionIndex].options}
+              question={currentQuestion.question}
+              options={currentQuestion.options}
               selectedOption={selectedOptions[currentQuestionIndex] || ""}
               handleOptionChange={handleOptionChange}
               handleSubmit={handleSubmit}
