@@ -1,4 +1,5 @@
 import uuid
+from django.core.exceptions import ObjectDoesNotExist
 from celery import shared_task
 
 from .models import DocumentProcessingJob, VideoProcessingJob
@@ -19,8 +20,8 @@ def generate_script_task(job_id: uuid.UUID):
 
     try:
         file_path = job.file.path
-        text = extract_text(file_path)
-        script = generate_script(text)
+        extracted_text = extract_text(file_path)
+        script = generate_script(extracted_text)
 
         # Update job status to 'successful' and save the generated script
         job.status = "successful"
@@ -36,25 +37,36 @@ def generate_script_task(job_id: uuid.UUID):
 
 @shared_task
 def process_video_task(job_id, script):
-    job = VideoProcessingJob.objects.get(job_id=job_id)
+    try:
+        job = VideoProcessingJob.objects.get(job_id=job_id)
+    except ObjectDoesNotExist:
+        return {
+            "status": "error",
+            "job_id": str(job_id),
+            "message": f"No VideoProcessingJob found with id {job_id}",
+        }
+
     job.status = "processing"
     job.save()
 
     try:
-        # Step 1: Generate image from the prompt
-        prompts = get_prompts_from_script(script)  # Assuming you have this function
+        prompts = get_prompts_from_script(script)
         images = generate_images(prompts)
-
-        # Step 2: Synthesize video based on script and generated images
         video = synthesize_video(script, images)
 
         job.status = "completed"
         job.generated_video = video
         job.save()
 
+        return job.to_dict()
+
     except Exception as e:
         job.status = "failed"
         job.save()
         print(f"Error generating video: {str(e)}")
 
-    return job
+        return {
+            "status": "error",
+            "job_id": str(job_id),
+            "message": f"Error generating video: {str(e)}",
+        }

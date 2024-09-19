@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./upload.css";
@@ -6,13 +7,12 @@ import axios from "axios";
 
 const FileUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const navigate = useNavigate();
 
-  // Handles file input changes
   const handleFileChange = (event) => {
     setSelectedFiles(Array.from(event.target.files));
   };
 
-  // Handles the file upload
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select a file before uploading.", {
@@ -39,6 +39,12 @@ const FileUpload = () => {
         toast.success("Document uploaded successfully! Processing started.", {
           position: "bottom-center",
         });
+
+        // Store the job_id in localStorage
+        localStorage.setItem("currentJobId", response.data.job_id);
+
+        // Start polling for job status
+        pollJobStatus(response.data.job_id);
       }
     } catch (error) {
       toast.error("Failed to upload the document. Please try again.", {
@@ -47,11 +53,28 @@ const FileUpload = () => {
     }
   };
 
-  // Placeholder for handling video retrieval (if needed)
-  const handleGetVideo = () => {
-    toast.info("The function is being updated currently.", {
-      position: "top-right",
-    });
+  const pollJobStatus = async (jobId) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/document-status/${jobId}/`
+        );
+        if (response.data.processing_status === "successful") {
+          clearInterval(pollInterval);
+          toast.success("Script generation completed!", {
+            position: "bottom-center",
+          });
+          navigate("/script-editor");
+        } else if (response.data.processing_status === "failed") {
+          clearInterval(pollInterval);
+          toast.error("Script generation failed. Please try again.", {
+            position: "top-right",
+          });
+        }
+      } catch (error) {
+        console.error("Error polling job status:", error);
+      }
+    }, 5000); // Poll every 5 seconds
   };
 
   return (
@@ -59,7 +82,7 @@ const FileUpload = () => {
       <h2>Upload Files</h2>
       <input
         type="file"
-        multiple
+        accept=".pdf"
         className="file-input"
         onChange={handleFileChange}
       />
@@ -74,14 +97,10 @@ const FileUpload = () => {
       </div>
       <div className="buttons">
         <button className="upload-button" onClick={handleUpload}>
-          Upload
-        </button>
-        <button className="video" onClick={handleGetVideo}>
-          Get Video
+          Start Generating
         </button>
       </div>
 
-      {/* ToastContainer to display notifications */}
       <ToastContainer />
     </div>
   );
