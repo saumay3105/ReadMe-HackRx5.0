@@ -22,4 +22,4 @@ To start the backend
 - Start django server by running `python manange.py runserver`
 
 
-### For any information required while installing do not hesitate to contact miranfirdausi@027@gmail.com or saumay123sj@gmail.com
+### For any information required, do not hesitate to contact miranfirdausi027@gmail.com or saumay123sj@gmail.com
