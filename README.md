@@ -31,9 +31,16 @@ To start the backend
 
 ### Screenshots
 ![Screenshot 2024-09-10 171456](https://github.com/user-attachments/assets/196e4739-2c9a-41f7-96ae-6de74c0a093d)
-![Screenshot 2024-09-20 162523](https://github.com/user-attachments/assets/3da80abb-416c-4bb2-bfd3-be5555c3c8bd)
-![Screenshot 2024-09-20 200210](https://github.com/user-attachments/assets/be5d265b-dc58-4a66-be3e-8b8ea0dfca1d)
-![Screenshot 2024-09-20 205032](https://github.com/user-attachments/assets/429b6e94-60e6-4b09-816f-8a70e3fab811)
+<p align="center">Fig: Home Page</p>
+
+![Screenshot 2024-09-20 162523](https://github.com/user-attachments/assets/3da80abb-416c-4bb2-bfd3-be5555c3c8bd)  
+<p align="center">Fig: Edit Script Page</p>
+  
+![Screenshot 2024-09-20 200210](https://github.com/user-attachments/assets/be5d265b-dc58-4a66-be3e-8b8ea0dfca1d)  
+<p align="center">Fig: Video Preview Page</p>
+  
+![Screenshot 2024-09-20 205032](https://github.com/user-attachments/assets/429b6e94-60e6-4b09-816f-8a70e3fab811)  
+<p align="center">Fig: Quiz Page</p>
 
 ### Contact
 For any information required, do not hesitate to contact miranfirdausi027@gmail.com or saumay123sj@gmail.com
