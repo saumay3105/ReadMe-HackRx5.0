@@ -1,16 +1,24 @@
 from django.http import HttpRequest, JsonResponse
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+from video_generator.models import DocumentProcessingJob
 from .functionalities.quiz_generation import generate_quiz_questions
 
 
 @api_view(["POST"])
-def get_questions(request: HttpRequest):
+def get_questions(request: HttpRequest, job_id):
     try:
-        # Extract the script text from the POST request body (assumes JSON format)
-        script_text = request.data.get("script_text")
+        job = DocumentProcessingJob.objects.get(job_id=job_id)
 
-        if not script_text:
-            return JsonResponse({"error": "No script text provided."}, status=400)
+        if not job.script:
+            return Response(
+                {"error": "No script found for this job."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        script_text = job.script
 
         # Generate quiz questions using the provided script text
         questions = generate_quiz_questions(script_text)

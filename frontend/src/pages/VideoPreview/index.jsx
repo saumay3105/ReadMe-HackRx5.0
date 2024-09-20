@@ -54,8 +54,7 @@ function VideoPreview() {
     try {
       toast.success("Generating questions. Please wait.");
       const questionsResponse = await axios.post(
-        "http://127.0.0.1:8000/generate-questions/",
-        { job_id: jobId } // Send job ID if needed
+        `http://127.0.0.1:8000/generate-questions/${jobId}/`
       );
 
       const questions = questionsResponse.data.questions;
