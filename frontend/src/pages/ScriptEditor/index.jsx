@@ -63,27 +63,11 @@ const TextEditor = () => {
       });
 
       toast.success("Script submitted successfully. Video generation started.");
-
-      toast.success("Generating questions. Please wait.");
-      const questionsResponse = await axios.post(
-        "http://127.0.0.1:8000/generate-questions/",
-        { script_text: script }
-      );
-
-      const questions = questionsResponse.data.questions;
-
-      if (questions) {
-        localStorage.setItem("quizQuestions", JSON.stringify(questions));
-
-        toast.success(
-          "Script submitted successfully. Video generation started."
-        );
-        navigate("/quiz");
-      } else {
-        toast.error("Failed to generate quiz questions.");
-      }
+      navigate("/video-preview"); // Navigate to video preview after submission
     } catch (error) {
-      toast.error("Failed to submit the script. Please try again." + error);
+      toast.error(
+        "Failed to submit the script. Please try again: " + error.message
+      );
     }
   };
 
@@ -94,6 +78,7 @@ const TextEditor = () => {
   return (
     <div className="editor-container">
       <Header showNav={false} />
+      <h2>Edit your script</h2>
       <textarea
         className="text-area"
         value={script}

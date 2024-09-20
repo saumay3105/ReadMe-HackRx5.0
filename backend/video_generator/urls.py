@@ -18,4 +18,9 @@ urlpatterns = [
         views.submit_script,
         name="submit_script",
     ),
+    path(
+        "generate-video/<uuid:job_id>/",
+        views.generate_video,
+        name="generate-video",
+    ),
 ]

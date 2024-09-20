@@ -1,5 +1,12 @@
 # ReadMe
 
+### Required OS
+Linux or Windows with WSL
+
+# Installing dependencies
+wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+
 ### How to use this software
 To start the frontend:
 - Navigate to `/frontend`
