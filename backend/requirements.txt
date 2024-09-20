@@ -14,3 +14,5 @@ pdfplumber
 python-dotenv
 google-generativeai
 azure-cognitiveservices-speech
+moviepy
+pillow
