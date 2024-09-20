@@ -1,10 +1,16 @@
 import logging
+import os
 import uuid
-from django.http import HttpRequest
+from django.http import FileResponse, HttpRequest
+from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from .functionalities.video_synthesis import (
+    generate_speech_and_viseme_from_text,
+    generate_video_from_script,
+)
 from .models import DocumentProcessingJob, VideoProcessingJob
 from .tasks import generate_script_task, process_video_task
 
@@ -167,3 +173,55 @@ def submit_script(request: HttpRequest, job_id):
             {"status": "error", "message": "No Job found for the given ID."},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+
+@api_view(["GET"])
+def generate_video(request, job_id):
+    try:
+        # Fetch the job using the provided job_id
+        job = DocumentProcessingJob.objects.get(job_id=job_id)
+
+        if not job.script:
+            return Response(
+                {"error": "No script found for this job."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Set up paths to save audio and video
+        audio_output_file = os.path.join(
+            settings.MEDIA_ROOT, "temp_asset", f"{job_id}.wav"
+        )
+        video_output_file = os.path.join(
+            settings.MEDIA_ROOT, "temp_asset", f"{job_id}.mp4"
+        )
+        viseme_output_file = os.path.join(
+            settings.MEDIA_ROOT, "temp_asset", f"{job_id}_viseme.json"
+        )
+
+        # Ensure the temp_asset directory exists
+        os.makedirs(os.path.dirname(audio_output_file), exist_ok=True)
+
+        # Generate speech and viseme data
+        viseme_data = generate_speech_and_viseme_from_text(
+            job.script, audio_output_file, viseme_output_file, video_output_file
+        )
+
+        generate_video_from_script(
+            script=job.script,
+            audio_output_file=audio_output_file,
+            video_output_file=video_output_file,
+        )
+
+        # Return the audio file as a response
+        if os.path.exists(video_output_file):
+            return FileResponse(open(video_output_file, "rb"), content_type="video/mp4")
+
+        return Response(
+            {"error": "Failed to generate video."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    except DocumentProcessingJob.DoesNotExist:
+        return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

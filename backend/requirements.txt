@@ -13,3 +13,4 @@ pdfplumber
 # langchain_community
 python-dotenv
 google-generativeai
+azure-cognitiveservices-speech
