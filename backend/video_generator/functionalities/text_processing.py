@@ -31,6 +31,16 @@ def generate_script(text: str) -> str:
 
     return response.text
 
+def generate_keywords(text: str) -> str:
+    GEMINI_API_KEY = 'AIzaSyBYKJmcss0_ESlLD0i3veYFmv9YhjXsaQc'  
+    genai.configure(api_key=GEMINI_API_KEY)  
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    llm_prompt = """
+    Given the extracted content from a document, generate a  list of 20  phrases for use as prompts in image generation from the provided text. Each phrase should be vivid and descriptive, evoking clear visual imagery while avoiding any company names, trademarked terms, or specific generative AI model names. The phrases should be suitable for a variety of creative concepts and should inspire diverse artistic interpretations. Output must be a python list containing the prompts.
+    """
+    response = model.generate_content(llm_prompt + text)
+
+    return response.text
 
 def get_prompts_from_script(script: str) -> List[str]:
     return [script]
