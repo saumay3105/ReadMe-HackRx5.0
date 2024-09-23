@@ -11,7 +11,6 @@ function Quiz() {
   const [quizData, setQuizData] = useState([]);
 
   useEffect(() => {
-    // Fetch quiz questions from localStorage
     const fetchedQuizData = JSON.parse(localStorage.getItem("quizQuestions"));
 
     if (fetchedQuizData) {
@@ -31,11 +30,11 @@ function Quiz() {
 
   const handleSubmit = () => {
     const nextQuestionIndex = currentQuestionIndex + 1;
-    if (nextQuestionIndex < quizData.length) {
+    if (nextQuestionIndex < 9) {
       setCurrentQuestionIndex(nextQuestionIndex);
     } else {
       setIsQuizFinished(true);
-      calculateScore(); // Calculate score when quiz is finished
+      calculateScore(); 
     }
   };
 
@@ -48,20 +47,30 @@ function Quiz() {
 
   const handleNext = () => {
     const nextQuestionIndex = currentQuestionIndex + 1;
-    if (nextQuestionIndex < quizData.length) {
+    if (nextQuestionIndex < 10) {
       setCurrentQuestionIndex(nextQuestionIndex);
     }
   };
 
   const calculateScore = () => {
+    let parsedQuizData;
+  
+    try {
+      parsedQuizData = typeof quizData === 'string' ? JSON.parse(quizData) : quizData;
+    } catch (error) {
+      console.error("Failed to parse quizData:", error);
+      return; 
+    }
+  
     let score = 0;
-    quizData.forEach((question, index) => {
+    parsedQuizData.forEach((question, index) => {
       if (selectedOptions[index] === question.correctAnswer) {
         score += 1;
       }
     });
     setPoints(score);
   };
+  
 
   if (quizData.length === 0) {
     return <div>Loading quiz...</div>;
@@ -82,7 +91,7 @@ function Quiz() {
         {isQuizFinished ? (
           <div className="result-container">
             <h2>
-              Your Score: {points} out of {quizData.length}
+              Your Score: {points} out of {10}
             </h2>
           </div>
         ) : (
@@ -104,7 +113,7 @@ function Quiz() {
               >
                 Previous
               </button>
-              {currentQuestionIndex < quizData.length - 1 ? (
+              {currentQuestionIndex < 10 - 1 ? (
                 <button
                   className="next-btn"
                   onClick={handleNext}
