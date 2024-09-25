@@ -4,9 +4,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./upload.css";
 import axios from "axios";
+import VideoLengthSelector from "../videolength";
 
 const FileUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [loading, setLoading] = useState(false); // New loading state
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {
@@ -23,6 +25,8 @@ const FileUpload = () => {
 
     const formData = new FormData();
     formData.append("file", selectedFiles[0]);
+
+    setLoading(true); // Set loading to true when uploading starts
 
     try {
       const response = await axios.post(
@@ -47,6 +51,7 @@ const FileUpload = () => {
         pollJobStatus(response.data.job_id);
       }
     } catch (error) {
+      setLoading(false); // Reset loading state on error
       toast.error("Failed to upload the document. Please try again.", {
         position: "top-right",
       });
@@ -67,6 +72,7 @@ const FileUpload = () => {
           navigate("/script-editor");
         } else if (response.data.processing_status === "failed") {
           clearInterval(pollInterval);
+          setLoading(false); // Reset loading state on failure
           toast.error("Script generation failed. Please try again.", {
             position: "top-right",
           });
@@ -76,6 +82,15 @@ const FileUpload = () => {
       }
     }, 5000); // Poll every 5 seconds
   };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <h2>Processing your document...</h2>
+        <img src='./public/load-35.gif' alt="Description of GIF" className="img-load" />
+      </div>
+    );
+  }
 
   return (
     <div className="upload-container">
@@ -100,7 +115,7 @@ const FileUpload = () => {
           Start Generating
         </button>
       </div>
-
+      <VideoLengthSelector/>
       <ToastContainer />
     </div>
   );

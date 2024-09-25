@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/Commons/Header";
 import FileUpload from "../../components/upload";
-import VideoLengthSelector from "../../components/videolength"; 
 import "./TextToVideo.css";
 
 const TextToVideo = () => {
@@ -15,7 +14,7 @@ const TextToVideo = () => {
       <Header showNav={false} />
       <div className="file-upload-container">
         <FileUpload />
-        <VideoLengthSelector /> 
+        
       </div>
     </div>
   );

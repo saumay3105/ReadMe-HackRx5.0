@@ -72,3 +72,14 @@ h2 {
   background-color: white;
   color: rgb(35, 87, 140);
 }
+
+.loading-container{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-load{
+  height:150px;
+  width: 150px;
+}
