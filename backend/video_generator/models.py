@@ -26,13 +26,13 @@ class DocumentProcessingJob(models.Model):
         choices=[
             ("queued", "Queued"),
             ("processing", "Processing"),
-            ("successful", "successful"),
+            ("successful", "Successful"),
             ("failed", "Failed"),
         ],
     )
     script = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    video_length = models.IntegerField(default=60)  # New field for video length in seconds
 
 class VideoProcessingJob(models.Model):
     job_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -50,6 +50,7 @@ class VideoProcessingJob(models.Model):
         upload_to="generated_videos/", null=True, blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    video_length = models.IntegerField(default=60)  # Optional: track video length here as well
 
     def to_dict(self):
         return {
@@ -59,4 +60,5 @@ class VideoProcessingJob(models.Model):
             "generated_video": (
                 str(self.generated_video) if self.generated_video else None
             ),
+            "video_length": self.video_length,  # Include video length in dict output if needed
         }

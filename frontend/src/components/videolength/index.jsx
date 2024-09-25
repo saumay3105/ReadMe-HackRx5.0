@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './VideoLengthSelector.css';  
 
-const VideoLengthSelector = () => {
-  const [videoLength, setVideoLength] = useState([60, 300]);
+const VideoLengthSelector = ({ setVideoLength }) => {
+  const [videoLength, setLocalVideoLength] = useState([60, 300]);
 
   const secondsToMinutes = (seconds) => Math.floor(seconds / 60);
   const minutesToSeconds = (minutes) => minutes * 60;
 
   const handleSliderChange = (event) => {
     const value = Number(event.target.value);
-    setVideoLength([value, value + 60]);
+    const newLength = [value, value + 60];
+    setLocalVideoLength(newLength);
+    setVideoLength(newLength); // Update parent state
   };
+
+  useEffect(() => {
+    setVideoLength(videoLength);
+  }, [videoLength, setVideoLength]);
 
   return (
     <div className="slider-container">
