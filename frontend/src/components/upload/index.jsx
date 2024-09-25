@@ -26,8 +26,7 @@ const FileUpload = () => {
     const formData = new FormData();
     formData.append("file", selectedFiles[0]);
 
-    setLoading(true); // Set loading to true when uploading starts
-
+     // Set loading to true when uploading starts
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/upload-document/",
@@ -40,15 +39,13 @@ const FileUpload = () => {
       );
 
       if (response.status === 202) {
-        toast.success("Document uploaded successfully! Processing started.", {
-          position: "bottom-center",
-        });
-
+      
         // Store the job_id in localStorage
         localStorage.setItem("currentJobId", response.data.job_id);
 
         // Start polling for job status
         pollJobStatus(response.data.job_id);
+        setLoading(true);
       }
     } catch (error) {
       setLoading(false); // Reset loading state on error
