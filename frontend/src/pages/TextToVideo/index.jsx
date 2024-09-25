@@ -16,9 +16,6 @@ const TextToVideo = () => {
       <div className="file-upload-container">
         <FileUpload />
         <VideoLengthSelector /> 
-        <Link to="/quiz" className="btn-primary">
-          Take Quiz
-        </Link>
       </div>
     </div>
   );
