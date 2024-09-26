@@ -8,7 +8,8 @@ import VideoLengthSelector from "../videolength";
 
 const FileUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
+  const [videoLength, setVideoLength] = useState([60, 300]);
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {
@@ -25,8 +26,10 @@ const FileUpload = () => {
 
     const formData = new FormData();
     formData.append("file", selectedFiles[0]);
+    formData.append("video_length", videoLength[0]);
 
-     // Set loading to true when uploading starts
+    setLoading(true); // Set loading state
+
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/upload-document/",
@@ -39,16 +42,11 @@ const FileUpload = () => {
       );
 
       if (response.status === 202) {
-      
-        // Store the job_id in localStorage
         localStorage.setItem("currentJobId", response.data.job_id);
-
-        // Start polling for job status
         pollJobStatus(response.data.job_id);
-        setLoading(true);
       }
     } catch (error) {
-      setLoading(false); // Reset loading state on error
+      setLoading(false);
       toast.error("Failed to upload the document. Please try again.", {
         position: "top-right",
       });
@@ -69,7 +67,7 @@ const FileUpload = () => {
           navigate("/script-editor");
         } else if (response.data.processing_status === "failed") {
           clearInterval(pollInterval);
-          setLoading(false); // Reset loading state on failure
+          setLoading(false);
           toast.error("Script generation failed. Please try again.", {
             position: "top-right",
           });
@@ -77,14 +75,14 @@ const FileUpload = () => {
       } catch (error) {
         console.error("Error polling job status:", error);
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000);
   };
 
   if (loading) {
     return (
       <div className="loading-container">
         <h2>Processing your document...</h2>
-        <img src='./public/load-35.gif' alt="Description of GIF" className="img-load" />
+        <img src='./public/load-35.gif' alt="Loading..." className="img-load" />
       </div>
     );
   }
@@ -112,7 +110,7 @@ const FileUpload = () => {
           Start Generating
         </button>
       </div>
-      <VideoLengthSelector/>
+      <VideoLengthSelector setVideoLength={setVideoLength} />
       <ToastContainer />
     </div>
   );

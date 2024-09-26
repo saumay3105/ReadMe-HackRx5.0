@@ -18,7 +18,8 @@ from .tasks import generate_script_task, process_video_task
 @api_view(["POST"])
 def upload_document(request: HttpRequest):
     file = request.FILES.get("file")
-
+    video_length = request.data.get("video_length")  # Get video length from request
+    print(f"Received video length: {video_length}")
     if not file or not file.name.endswith(".pdf"):
         return Response(
             {
@@ -34,11 +35,11 @@ def upload_document(request: HttpRequest):
 
         # Save the job details to the database (initial status: queued)
         job = DocumentProcessingJob.objects.create(
-            job_id=job_id, file=file, status="queued"
+            job_id=job_id, file=file, status="queued", video_length=video_length
         )
 
         # Trigger the Celery task asynchronously
-        generate_script_task.delay(job.job_id)
+        generate_script_task.delay(job.job_id, video_length)  # Pass video_length to task
 
         return Response(
             {
@@ -55,6 +56,7 @@ def upload_document(request: HttpRequest):
             {"status": "error", "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
 
 
 @api_view(["GET"])

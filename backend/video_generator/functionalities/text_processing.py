@@ -16,20 +16,26 @@ def extract_text(file_path) -> str:
     return extracted_text
 
 
-def generate_script(text: str) -> str:
+def generate_script(text: str, video_length: int) -> str:
     load_dotenv(find_dotenv())
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel("gemini-1.5-flash")
+    
     llm_prompt = """
     Given the following extracted content from a document, rewrite it as a continuous, engaging monologue.
     The monologue should flow naturally, as if delivered by a speaker giving an in-depth explanation or lecture.
-    present the information in a coherent and narrative style that maintains the listener’s interest.
+    Present the information in a coherent and narrative style that maintains the listener’s interest.
     Ensure the text is suitable for speech, aiming to educate and captivate the audience with a clear and engaging delivery, keep it simple, use simple words.
     Do not miss any important information.
     """
-    response = model.generate_content(llm_prompt + text)
 
+    # Add video length to the prompt
+    llm_prompt += f"\n\nPlease make the script approximately {video_length} seconds long."
+
+    response = model.generate_content(llm_prompt + text)
+    
     return response.text
+
 
 def generate_keywords(text: str) -> str:
     GEMINI_API_KEY = 'AIzaSyBYKJmcss0_ESlLD0i3veYFmv9YhjXsaQc'  
