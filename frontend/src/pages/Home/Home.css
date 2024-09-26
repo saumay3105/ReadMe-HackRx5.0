@@ -8,7 +8,7 @@ html, body {
 .hero {
   position: relative;
   height: 100vh;
-  color: rgb(9, 59, 84);;
+  color: rgb(9, 59, 84);
   text-align: center;
   display: flex;
   flex-direction: column;
