@@ -36,7 +36,7 @@ To start the backend
 ![Screenshot 2024-09-20 162523](https://github.com/user-attachments/assets/3da80abb-416c-4bb2-bfd3-be5555c3c8bd)  
 <p align="center">Fig: Edit Script Page</p>
   
-![Screenshot 2024-09-20 200210](https://github.com/user-attachments/assets/be5d265b-dc58-4a66-be3e-8b8ea0dfca1d)  
+![Screenshot 2024-09-28 204358](https://github.com/user-attachments/assets/49a7242d-fea9-4dcc-a5b6-9b8e2a1710c5)  
 <p align="center">Fig: Video Preview Page</p>
   
 ![Screenshot 2024-09-20 205032](https://github.com/user-attachments/assets/429b6e94-60e6-4b09-816f-8a70e3fab811)  
