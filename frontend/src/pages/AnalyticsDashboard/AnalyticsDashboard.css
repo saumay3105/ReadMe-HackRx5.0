@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; 
+  }
+  
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff; 
+    color: black; 
+    min-height: 100vh;
+  }
+  
+  .header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff; 
+    color: black; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    margin-left: 20px;
+    color: black;
+    cursor: pointer;
+  }
+  
+  nav ul li:hover {
+    color: #333;
+  }
+  
+  main {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 50px; 
+    padding: 20px; 
+  }
+  
+  .overview-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .charts-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+ 
+  .overview-card, .best-videos-card, .difficult-quiz-card, .views-chart, .user-age-chart {
+    background-color: #ffffff; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    height: 100%;
+  }
+  
+  h3 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+  
+  p {
+    margin: 10px 0;
+  }
+  
+  .positive {
+    color: #4caf50;
+  }
+  
+  .negative {
+    color: #f44336;
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background-color: #4caf50;
+    margin-bottom: 15px;
+  }
+  
+  .progress-bar.blue {
+    background-color: #2196f3;
+  }
+  
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+ 
+  @media screen and (max-width: 768px) {
+    .overview-section, .charts-section {
+      grid-template-columns: 1fr;
+    }
+  }
+  
