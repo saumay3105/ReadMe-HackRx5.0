@@ -5,6 +5,77 @@ from dotenv import load_dotenv, find_dotenv
 import azure.cognitiveservices.speech as speechsdk
 from moviepy.editor import TextClip, ColorClip, CompositeVideoClip, AudioFileClip
 import moviepy.editor as mpy
+import aiohttp
+import asyncio
+from moviepy.editor import ImageClip, concatenate_videoclips
+from PIL import Image
+from io import BytesIO
+import numpy as np
+from video_generator.functionalities.text_processing import generate_keywords
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
+unsplash_api_key = os.environ["UNSPLASH_API_KEY"]
+pixabay_api_key = os.environ["PIXABAY_API_KEY"]
+
+
+async def fetch_image_from_unsplash(session, keyword):
+    url = f"https://api.unsplash.com/search/photos?query={keyword}&client_id={unsplash_api_key}"
+    async with session.get(url) as response:
+        if response.status == 200:
+            data = await response.json()
+            if data["results"]:
+                return data["results"][0]["urls"]["small"]
+    return None
+
+
+async def fetch_image_from_pixabay(session, keyword):
+    url = f"https://pixabay.com/api/?key={pixabay_api_key}&q={keyword}&image_type=photo"
+    async with session.get(url) as response:
+        if response.status == 200:
+            data = await response.json()
+            if data["hits"]:
+                return data["hits"][0]["largeImageURL"]
+    return None
+
+
+async def fetch_image_bytes(session, img_url):
+    """
+    Fetch the image bytes from the URL.
+    """
+    async with session.get(img_url) as img_response:
+        if img_response.status == 200:
+            return await img_response.read()
+    return None
+
+
+async def fetch_images_as_clips(keywords):
+    """
+    Fetch images for the given keywords, convert them to in-memory ImageClips,
+    and return the list of ImageClips.
+    """
+    clips = []
+    async with aiohttp.ClientSession() as session:
+        for keyword in keywords:
+            img_url = await fetch_image_from_unsplash(session, keyword)
+
+            if not img_url:
+                img_url = await fetch_image_from_pixabay(session, keyword)
+
+            if img_url:
+                img_data = await fetch_image_bytes(session, img_url)
+                if img_data:
+                    img = Image.open(BytesIO(img_data)).convert("RGB")
+                    img_np = np.array(img)  # Convert PIL image to NumPy array
+                    img_clip = ImageClip(img_np).set_duration(
+                        5
+                    )  # Set duration of each image to 5 seconds
+                    clips.append(img_clip)
+                    print(f"Downloaded and added image for keyword: {keyword}")
+            else:
+                print(f"No images found for: {keyword}")
+    return clips
 
 
 def generate_speech_and_viseme_from_text(
@@ -56,78 +127,62 @@ def generate_speech_and_viseme_from_text(
     return viseme_data
 
 
-def synthesize_video(script: str, images: List[str], video_output_file):
-    background_clip = ColorClip(size=(640, 480), color=(0, 0, 0), duration=50)
-
-    # Create a text clip with the script text
-    text_clip = TextClip(
-        script,
-        fontsize=24,
-        color="white",
-    )
-
-    # Set the duration for the video (match it with the audio length if needed)
-    text_clip = text_clip.set_duration(50).set_position("center")
-
-    # Create a video with the text
-    video = CompositeVideoClip([background_clip, text_clip])
-
-    # Write the video to a file
-    video.write_videofile(video_output_file, fps=24)
-
-    return video
-
-
-def generate_video_from_script(
+async def generate_video_from_script(
     script: str, audio_output_file: str, video_output_file: str
 ):
-    # Load the audio file to get its duration
+    """
+    Fetch images for the given keywords and generate a video directly.
+    """
     audio_clip = AudioFileClip(audio_output_file)
-    total_duration = audio_clip.duration
+    keywords = generate_keywords(script)
+    clips = await fetch_images_as_clips(keywords)
 
-    print(total_duration)
+    if clips:
+        landscape_clips = []
+        for clip in clips:
+            img = clip.get_frame(0)  # Get a frame from the clip
+            pil_img = Image.fromarray(img)  # Convert to a PIL Image
+            
+            # Resize the image to landscape (1280x720) using LANCZOS
+            resized_img = pil_img.resize((1280, 720), Image.Resampling.LANCZOS)
 
-    # Split the script into manageable segments
-    words = script.split()
-    words_per_screen = 20
-    total_words = len(words)
-    screens_needed = (total_words + words_per_screen - 1) // words_per_screen
-    time_per_screen = total_duration / screens_needed
+            # Convert the resized image back to a NumPy array
+            resized_array = np.array(resized_img)
+            
+            # Create a new ImageClip from the resized image
+            landscape_clip = ImageClip(resized_array).set_duration(clip.duration)
+            landscape_clips.append(landscape_clip)
 
-    # Create video clips for each text segment
-    video_clips = []
-    for i in range(screens_needed):
-        start_index = i * words_per_screen
-        end_index = min(start_index + words_per_screen, total_words)
-        text_segment = " ".join(words[start_index:end_index])
+        # Concatenate the resized landscape clips into a single video
+        video_clip = concatenate_videoclips(landscape_clips, method="compose")
+        
+        # Add the audio to the video
+        final_video = video_clip.set_audio(audio_clip)
+        final_video.write_videofile(video_output_file, fps=24)
+        print("Video saved as output_video.mp4")
+    else:
+        print("No images to generate video.")
 
-        # Create a background clip
-        background_clip = ColorClip(
-            size=(640, 480), color=(0, 0, 0), duration=time_per_screen
-        )
 
-        # Create a text clip
-        text_clip = (
-            TextClip(
-                text_segment,
-                fontsize=24,
-                color="white",
-                size=(500, 400),
-                method="caption",
-            )
-            .set_duration(time_per_screen)
-            .set_position("center")
-        )
+script = """
+Health insurance plays a pivotal role in modern healthcare, ensuring individuals have access to necessary medical services without facing overwhelming financial burdens. It acts as a safety net, covering medical expenses that can arise from illness, injury, or preventive care. As healthcare costs continue to rise globally, the importance of health insurance has grown significantly, making it an essential component of personal and societal well-being.
 
-        # Combine background and text
-        video_clip = CompositeVideoClip([background_clip, text_clip])
-        video_clips.append(video_clip)
+The Basics of Health Insurance
+Health insurance is essentially a contract between an individual and an insurance company. In exchange for regular premium payments, the insurance provider agrees to cover certain medical expenses, either partially or fully, depending on the plan's specifics. These expenses may include doctor visits, hospital stays, surgeries, prescription medications, and preventive care services such as vaccinations and screenings. The insured individual often shares some of these costs through co-pays, deductibles, and co-insurance.
 
-    # Concatenate all video clips
-    final_video = mpy.concatenate_videoclips(video_clips)
+There are different types of health insurance plans, ranging from private insurance provided by employers or purchased individually to government-funded programs like Medicare, Medicaid, and in some countries, universal healthcare. Each system varies in terms of coverage, eligibility, and cost, but the overarching goal remains the same: to protect individuals from the high costs of healthcare.
+"""
 
-    # Set audio to the final video
-    final_video = final_video.set_audio(audio_clip)
 
-    # Write the final video to a file
-    final_video.write_videofile(video_output_file, fps=24)
+# async def main():
+#     await generate_video_from_script(
+#         script=script,
+#         audio_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/5d4d230a-fd1c-456a-926b-0240f33ac0e4.wav",
+#         video_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/video_output_file_final.mp4",
+#     )
+
+
+# try:
+#     asyncio.run(main())
+# except Exception as e:
+#     print(e)

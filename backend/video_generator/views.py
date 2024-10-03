@@ -6,7 +6,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
+import asyncio
 from .functionalities.video_synthesis import (
     generate_speech_and_viseme_from_text,
     generate_video_from_script,
@@ -39,7 +39,9 @@ def upload_document(request: HttpRequest):
         )
 
         # Trigger the Celery task asynchronously
-        generate_script_task.delay(job.job_id, video_length)  # Pass video_length to task
+        generate_script_task.delay(
+            job.job_id, video_length
+        )  # Pass video_length to task
 
         return Response(
             {
@@ -56,7 +58,6 @@ def upload_document(request: HttpRequest):
             {"status": "error", "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
 
 
 @api_view(["GET"])
@@ -208,10 +209,12 @@ def generate_video(request, job_id):
             job.script, audio_output_file, viseme_output_file, video_output_file
         )
 
-        generate_video_from_script(
-            script=job.script,
-            audio_output_file=audio_output_file,
-            video_output_file=video_output_file,
+        asyncio.run(
+            generate_video_from_script(
+                script=job.script,
+                audio_output_file=audio_output_file,
+                video_output_file=video_output_file,
+            )
         )
 
         # Return the audio file as a response
@@ -226,4 +229,5 @@ def generate_video(request, job_id):
     except DocumentProcessingJob.DoesNotExist:
         return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        print(e)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

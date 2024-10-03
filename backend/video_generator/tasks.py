@@ -8,8 +8,7 @@ from .functionalities.text_processing import (
     generate_script,
     get_prompts_from_script,
 )
-from .functionalities.image_generation import generate_images
-from .functionalities.video_synthesis import synthesize_video
+from .functionalities.video_synthesis import generate_video_from_script
 
 
 @shared_task
@@ -21,7 +20,9 @@ def generate_script_task(job_id: uuid.UUID, video_length: int):
     try:
         file_path = job.file.path
         extracted_text = extract_text(file_path)
-        script = generate_script(extracted_text, video_length)  # Pass video_length to generate_script
+        script = generate_script(
+            extracted_text, video_length
+        )  # Pass video_length to generate_script
 
         # Update job status to 'successful' and save the generated script
         job.status = "successful"
@@ -33,7 +34,6 @@ def generate_script_task(job_id: uuid.UUID, video_length: int):
 
     finally:
         job.save()
-
 
 
 @shared_task
@@ -53,7 +53,7 @@ def process_video_task(job_id, script):
     try:
         prompts = get_prompts_from_script(script)
         images = generate_images(prompts)
-        video = synthesize_video(script, images)
+        # video = generate_video_from_script(script, images)
 
         job.status = "completed"
         job.generated_video = video
