@@ -138,10 +138,26 @@ async def generate_video_from_script(
     clips = await fetch_images_as_clips(keywords)
 
     if clips:
-        # Concatenate the ImageClips to form a video
-        video_clip = concatenate_videoclips(clips, method="compose")
+        landscape_clips = []
+        for clip in clips:
+            img = clip.get_frame(0)  # Get a frame from the clip
+            pil_img = Image.fromarray(img)  # Convert to a PIL Image
+            
+            # Resize the image to landscape (1280x720) using LANCZOS
+            resized_img = pil_img.resize((1280, 720), Image.Resampling.LANCZOS)
+
+            # Convert the resized image back to a NumPy array
+            resized_array = np.array(resized_img)
+            
+            # Create a new ImageClip from the resized image
+            landscape_clip = ImageClip(resized_array).set_duration(clip.duration)
+            landscape_clips.append(landscape_clip)
+
+        # Concatenate the resized landscape clips into a single video
+        video_clip = concatenate_videoclips(landscape_clips, method="compose")
+        
+        # Add the audio to the video
         final_video = video_clip.set_audio(audio_clip)
-        # Save the video as 'output_video.mp4'
         final_video.write_videofile(video_output_file, fps=24)
         print("Video saved as output_video.mp4")
     else:
@@ -158,15 +174,15 @@ There are different types of health insurance plans, ranging from private insura
 """
 
 
-async def main():
-    await generate_video_from_script(
-        script=script,
-        audio_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/5d4d230a-fd1c-456a-926b-0240f33ac0e4.wav",
-        video_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/video_output_file_final.mp4",
-    )
+# async def main():
+#     await generate_video_from_script(
+#         script=script,
+#         audio_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/5d4d230a-fd1c-456a-926b-0240f33ac0e4.wav",
+#         video_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/video_output_file_final.mp4",
+#     )
 
 
-try:
-    asyncio.run(main())
-except Exception as e:
-    print(e)
+# try:
+#     asyncio.run(main())
+# except Exception as e:
+#     print(e)
