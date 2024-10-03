@@ -3,6 +3,7 @@ from typing import List
 import google.generativeai as genai
 import pdfplumber
 from dotenv import load_dotenv, find_dotenv
+import ast
 
 
 def extract_text(file_path) -> str:
@@ -20,7 +21,7 @@ def generate_script(text: str, video_length: int) -> str:
     load_dotenv(find_dotenv())
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel("gemini-1.5-flash")
-    
+
     llm_prompt = """
     Given the following extracted content from a document, rewrite it as a continuous, engaging monologue.
     The monologue should flow naturally, as if delivered by a speaker giving an in-depth explanation or lecture.
@@ -30,23 +31,29 @@ def generate_script(text: str, video_length: int) -> str:
     """
 
     # Add video length to the prompt
-    llm_prompt += f"\n\nPlease make the script approximately {video_length} seconds long."
+    llm_prompt += (
+        f"\n\nPlease make the script approximately {video_length} seconds long."
+    )
 
     response = model.generate_content(llm_prompt + text)
-    
+
     return response.text
 
 
-def generate_keywords(text: str) -> str:
-    GEMINI_API_KEY = 'AIzaSyBYKJmcss0_ESlLD0i3veYFmv9YhjXsaQc'  
-    genai.configure(api_key=GEMINI_API_KEY)  
+def generate_keywords(text: str):
+    GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
+    genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     llm_prompt = """
-    Given the extracted content from a document, generate a  list of 20  phrases for use as prompts in image generation from the provided text. Each phrase should be vivid and descriptive, evoking clear visual imagery while avoiding any company names, trademarked terms, or specific generative AI model names. The phrases should be suitable for a variety of creative concepts and should inspire diverse artistic interpretations. Output must be a python list containing the prompts.
+    Given the extracted content from a document, generate 20 one or max three words keywords for use as prompts in image generation from the provided text. Each phrase should be vivid and descriptive, evoking clear visual imagery while avoiding any company names, trademarked terms, or specific generative AI model names. The phrases should be suitable for a variety of creative concepts and should inspire diverse artistic interpretations. Output should be a python list with no name just list
     """
     response = model.generate_content(llm_prompt + text)
+    start_idx = response.text.find("[")
+    end_idx = response.text.rfind("]") + 1
+    trimmed_response = response.text[start_idx:end_idx]
 
-    return response.text
+    return ast.literal_eval(trimmed_response)
+
 
 def get_prompts_from_script(script: str) -> List[str]:
     return [script]
