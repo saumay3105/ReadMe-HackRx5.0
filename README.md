@@ -27,7 +27,7 @@ To start the backend
 - Navigate to `/backend`
 - Start redis via docker `docker run -d -p 6379:6379 redis`
 - Start Celery worker for background tasks: `watchmedo auto-restart -d .. -p '*.py' --recursive -- celery -A readme.celery worker`
-- Start the Django server: `python manange.py runserver`
+- Start the Django server: `python manage.py runserver`
 
 ### Screenshots
 ![Screenshot 2024-09-10 171456](https://github.com/user-attachments/assets/196e4739-2c9a-41f7-96ae-6de74c0a093d)
