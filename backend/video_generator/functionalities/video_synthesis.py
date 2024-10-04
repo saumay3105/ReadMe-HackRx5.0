@@ -131,35 +131,40 @@ async def generate_video_from_script(
     script: str, audio_output_file: str, video_output_file: str
 ):
     """
-    Fetch images for the given keywords and generate a video directly.
+    Fetch images for the given keywords and generate a video that matches the length of the audio.
     """
     audio_clip = AudioFileClip(audio_output_file)
+    audio_duration = audio_clip.duration  # Get the duration of the audio in seconds
     keywords = generate_keywords(script)
     clips = await fetch_images_as_clips(keywords)
 
     if clips:
+        num_clips = len(clips)
+        # Calculate the duration each image should stay on screen
+        clip_duration = audio_duration / num_clips
+
         landscape_clips = []
         for clip in clips:
             img = clip.get_frame(0)  # Get a frame from the clip
             pil_img = Image.fromarray(img)  # Convert to a PIL Image
-            
+
             # Resize the image to landscape (1280x720) using LANCZOS
             resized_img = pil_img.resize((1280, 720), Image.Resampling.LANCZOS)
 
             # Convert the resized image back to a NumPy array
             resized_array = np.array(resized_img)
-            
-            # Create a new ImageClip from the resized image
-            landscape_clip = ImageClip(resized_array).set_duration(clip.duration)
+
+            # Create a new ImageClip from the resized image with the calculated duration
+            landscape_clip = ImageClip(resized_array).set_duration(clip_duration)
             landscape_clips.append(landscape_clip)
 
         # Concatenate the resized landscape clips into a single video
         video_clip = concatenate_videoclips(landscape_clips, method="compose")
-        
+
         # Add the audio to the video
         final_video = video_clip.set_audio(audio_clip)
         final_video.write_videofile(video_output_file, fps=24)
-        print("Video saved as output_video.mp4")
+        print(f"Video saved as {video_output_file}")
     else:
         print("No images to generate video.")
 
