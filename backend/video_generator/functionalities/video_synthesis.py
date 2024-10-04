@@ -13,6 +13,7 @@ from io import BytesIO
 import numpy as np
 from video_generator.functionalities.text_processing import generate_keywords
 from dotenv import load_dotenv, find_dotenv
+import random
 
 load_dotenv(find_dotenv())
 
@@ -25,7 +26,10 @@ async def fetch_image_from_unsplash(session, keyword):
     async with session.get(url) as response:
         if response.status == 200:
             data = await response.json()
+            num = random.randint(1, 5)
             if data["results"]:
+                if data["results"][num]:
+                    return data["results"][num]["urls"]["small"]
                 return data["results"][0]["urls"]["small"]
     return None
 
@@ -36,6 +40,9 @@ async def fetch_image_from_pixabay(session, keyword):
         if response.status == 200:
             data = await response.json()
             if data["hits"]:
+                num = random.randint(1, 5)
+                if data["hits"][num]:
+                    return data["hits"][num]["largeImageURL"]
                 return data["hits"][0]["largeImageURL"]
     return None
 
@@ -167,27 +174,3 @@ async def generate_video_from_script(
         print(f"Video saved as {video_output_file}")
     else:
         print("No images to generate video.")
-
-
-script = """
-Health insurance plays a pivotal role in modern healthcare, ensuring individuals have access to necessary medical services without facing overwhelming financial burdens. It acts as a safety net, covering medical expenses that can arise from illness, injury, or preventive care. As healthcare costs continue to rise globally, the importance of health insurance has grown significantly, making it an essential component of personal and societal well-being.
-
-The Basics of Health Insurance
-Health insurance is essentially a contract between an individual and an insurance company. In exchange for regular premium payments, the insurance provider agrees to cover certain medical expenses, either partially or fully, depending on the plan's specifics. These expenses may include doctor visits, hospital stays, surgeries, prescription medications, and preventive care services such as vaccinations and screenings. The insured individual often shares some of these costs through co-pays, deductibles, and co-insurance.
-
-There are different types of health insurance plans, ranging from private insurance provided by employers or purchased individually to government-funded programs like Medicare, Medicaid, and in some countries, universal healthcare. Each system varies in terms of coverage, eligibility, and cost, but the overarching goal remains the same: to protect individuals from the high costs of healthcare.
-"""
-
-
-# async def main():
-#     await generate_video_from_script(
-#         script=script,
-#         audio_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/5d4d230a-fd1c-456a-926b-0240f33ac0e4.wav",
-#         video_output_file="C:/Users/sauma/OneDrive/Documents/GitHub/Bajaj-HackRx-5.0/backend/media/temp_asset/video_output_file_final.mp4",
-#     )
-
-
-# try:
-#     asyncio.run(main())
-# except Exception as e:
-#     print(e)
