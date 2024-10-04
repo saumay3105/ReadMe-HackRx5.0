@@ -39,9 +39,8 @@ def upload_document(request: HttpRequest):
         )
 
         # Trigger the Celery task asynchronously
-        generate_script_task.delay(
-            job.job_id, video_length
-        )  # Pass video_length to task
+        generate_script_task.delay(job.job_id, video_length)
+        # Pass video_length to task
 
         return Response(
             {
