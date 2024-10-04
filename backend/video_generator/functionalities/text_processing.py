@@ -17,11 +17,11 @@ def extract_text(file_path) -> str:
     return extracted_text
 
 
-def generate_script(text: str, video_length: int) -> str:
+def generate_script(docs_path:str,video_length: int) -> str:
     load_dotenv(find_dotenv())
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel("gemini-1.5-flash")
-
+    sample_pdf = genai.upload_file(docs_path)
     llm_prompt = """
     Given the following extracted content from a document, rewrite it as a continuous, engaging monologue.
     The monologue should flow naturally, as if delivered by a speaker giving an in-depth explanation or lecture.
@@ -35,8 +35,7 @@ def generate_script(text: str, video_length: int) -> str:
         f"\n\nPlease make the script approximately {video_length} seconds long."
     )
 
-    response = model.generate_content(llm_prompt + text)
-
+    response = model.generate_content([llm_prompt, sample_pdf])
     return response.text
 
 
