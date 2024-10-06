@@ -16,3 +16,7 @@ google-generativeai
 azure-cognitiveservices-speech
 moviepy
 pillow
+aiohttp
+djangorestframework-simplejwt
+django-allauth
+dj-rest-auth
