@@ -32,7 +32,8 @@ class DocumentProcessingJob(models.Model):
     )
     script = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    video_length = models.IntegerField(default=60)  # New field for video length in seconds
+    video_length = models.IntegerField(default=60) 
+    language = models.TextField(null=True, blank=True)
 
 class VideoProcessingJob(models.Model):
     job_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

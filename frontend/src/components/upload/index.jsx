@@ -5,13 +5,15 @@ import "react-toastify/dist/ReactToastify.css";
 import "./upload.css";
 import axios from "axios";
 import VideoLengthSelector from "../videolength";
+import Language_Selector from "../Language_Selector";
 
 const FileUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [videoLength, setVideoLength] = useState([60, 300]);
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
   const navigate = useNavigate();
-
+  
   const handleFileChange = (event) => {
     setSelectedFiles(Array.from(event.target.files));
   };
@@ -27,6 +29,7 @@ const FileUpload = () => {
     const formData = new FormData();
     formData.append("file", selectedFiles[0]);
     formData.append("video_length", videoLength[0]);
+    formData.append("language", selectedLanguage);
 
     setLoading(true); // Set loading state
 
@@ -81,7 +84,7 @@ const FileUpload = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <h2>Processing your document...</h2>
+        <h2 className="upload-heading">Processing your document...</h2>
         <img src='./public/load-35.gif' alt="Loading..." className="img-load" />
       </div>
     );
@@ -89,7 +92,7 @@ const FileUpload = () => {
 
   return (
     <div className="upload-container">
-      <h2>Upload Files</h2>
+      <h2 className="upload-heading">Upload Files</h2>
       <input
         type="file"
         accept=".pdf"
@@ -111,6 +114,7 @@ const FileUpload = () => {
         </button>
       </div>
       <VideoLengthSelector setVideoLength={setVideoLength} />
+      <Language_Selector setSelectedLanguage={setSelectedLanguage} />
       <ToastContainer />
     </div>
   );
