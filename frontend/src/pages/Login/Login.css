@@ -1,33 +1,8 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow-x: hidden;
-}
   
 .login-page {
-    background-color: rgba(255, 255, 255, 1); 
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100vh;
-}
-  
-.login-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    padding: 10px 20px;
-    z-index: 2;
-    background: transparent; 
-}
-  
-.logo img {
-    width: 100px;
-    height: auto;
 }
 
 .back-button {
@@ -65,8 +40,7 @@ html, body {
 .form-group label {
     color: rgb(35, 87, 140); 
     display: block; 
-    margin-bottom: 5px; 
-    font-weight: bold;
+    font-weight: 400;
 }
 
 .form-group input {
@@ -120,12 +94,12 @@ html, body {
 .google-signin-button {
     display: flex;
     align-items: center; 
-    background-color: rgb(35, 87, 140);
-    color: #fff;
-    border: none;
+    background-color: #fff;
+    color: rgb(35, 87, 140);
+    border: 2px solid rgb(35, 87, 140);
     padding: 15px 30px;
     border-radius: 5px;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
   }
   

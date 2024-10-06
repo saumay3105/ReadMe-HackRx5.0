@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Login.css';
-
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "./Login.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const navigate = useNavigate();
@@ -21,47 +21,49 @@ const Login = () => {
   const handleNormalLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
-        method: 'POST',
+      const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
       if (response.ok) {
-        console.log('Login successful:', data);
+        console.log("Login successful:", data);
+        toast.success("Login Successful!", {
+          position: "top-center",
+        });
       } else {
-        console.error('Login failed:', data);
+        const error_messages = data["non_field_errors"];
+        error_messages.forEach((e) => {
+          toast.error(`Login Failed! ${e}`, {
+            position: "top-right",
+          });
+        });
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.log("An Error occured while logging in:", error);
     }
   };
 
   const handleGoogleLogin = () => {
-    const clientId = '124612198450-m656umkla59i5d7nisl122q914fqnrck.apps.googleusercontent.com';
-    const redirectUri = 'http://localhost:3000/';
-    const scope = 'openid email profile';
-    const nonce = 'abcdef';
-    
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&response_type=token+id_token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&nonce=${nonce}`;
-    
-    window.location.href = googleAuthUrl; 
+    const clientId =
+      "124612198450-m656umkla59i5d7nisl122q914fqnrck.apps.googleusercontent.com";
+    const redirectUri = "http://localhost:3000/";
+    const scope = "openid email profile";
+    const nonce = "abcdef";
+
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&response_type=token+id_token&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&scope=${encodeURIComponent(scope)}&nonce=${nonce}`;
+
+    window.location.href = googleAuthUrl;
   };
 
   return (
     <div className="login-page">
-      <header className="login-header">
-        <div className="logo">
-          <img src="/logo1.png" alt="Logo" />
-        </div>
-        <button className="back-button" onClick={() => navigate('/')}>
-          Back
-        </button>
-      </header>
-
       <div className="login-container">
         <h2>Login</h2>
         <form onSubmit={handleNormalLogin}>
@@ -85,17 +87,27 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
         </form>
+        <hr />
 
         <div className="login-options">
           <button className="google-signin-button" onClick={handleGoogleLogin}>
-            <img src="/google.png" alt="Google Logo" style={{ width: '20px', marginRight: '10px' }} />
+            <img
+              src="/google.png"
+              alt="Google Logo"
+              style={{ width: "20px", marginRight: "10px" }}
+            />
             Sign in with Google
           </button>
-          <p>New User? <Link to="/signup">Register</Link></p>
+          <p>
+            New User? <Link to="/signup">Register</Link>
+          </p>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
