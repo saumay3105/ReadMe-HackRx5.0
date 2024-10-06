@@ -20,13 +20,13 @@ def upload_document(request: HttpRequest):
     file = request.FILES.get("file")
     video_length = request.data.get("video_length") 
     language = request.data.get("language")
-    print(f'the language is {language}')
+
     # Validate input
     if not file or not file.name.endswith(".pdf"):
         return Response(
             {
                 "status": "error",
-                "message": "Invalid file format. Please provide the document in PDF format.",
+                "message": "Invalid file format. Please provide a valid document. Accepted formats are pdf, docx, txt and md.",
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -203,7 +203,7 @@ def generate_video(request, job_id):
             settings.MEDIA_ROOT, "temp_asset", f"{job_id}.wav"
         )
         video_output_file = os.path.join(
-            settings.MEDIA_ROOT, "temp_asset", f"{job_id}.mp4"
+            settings.MEDIA_ROOT, "generated_videos", f"{job_id}.mp4"
         )
         viseme_output_file = os.path.join(
             settings.MEDIA_ROOT, "temp_asset", f"{job_id}_viseme.json"

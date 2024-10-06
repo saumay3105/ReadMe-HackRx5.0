@@ -63,3 +63,16 @@ class VideoProcessingJob(models.Model):
             ),
             "video_length": self.video_length,  # Include video length in dict output if needed
         }
+
+class Video(models.Model):
+    video_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    document_job = models.ForeignKey(DocumentProcessingJob, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    video_file = models.FileField(upload_to='generated_videos/')
+    duration = models.DurationField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    published = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title

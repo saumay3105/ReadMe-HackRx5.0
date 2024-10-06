@@ -20,7 +20,7 @@ def generate_script_task(job_id: uuid.UUID, video_length: int,language:str):
     try:
         file_path = job.file.path
         script = generate_script(
-            file_path, video_length,language
+            file_path, video_length, language
         )  # Pass video_length to generate_script
 
         # Update job status to 'successful' and save the generated script

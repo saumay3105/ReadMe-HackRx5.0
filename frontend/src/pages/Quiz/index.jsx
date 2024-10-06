@@ -34,7 +34,7 @@ function Quiz() {
       setCurrentQuestionIndex(nextQuestionIndex);
     } else {
       setIsQuizFinished(true);
-      calculateScore(); 
+      calculateScore();
     }
   };
 
@@ -54,14 +54,15 @@ function Quiz() {
 
   const calculateScore = () => {
     let parsedQuizData;
-  
+
     try {
-      parsedQuizData = typeof quizData === 'string' ? JSON.parse(quizData) : quizData;
+      parsedQuizData =
+        typeof quizData === "string" ? JSON.parse(quizData) : quizData;
     } catch (error) {
       console.error("Failed to parse quizData:", error);
-      return; 
+      return;
     }
-  
+
     let score = 0;
     parsedQuizData.forEach((question, index) => {
       if (selectedOptions[index] === question.correctAnswer) {
@@ -70,7 +71,6 @@ function Quiz() {
     });
     setPoints(score);
   };
-  
 
   if (quizData.length === 0) {
     return <div>Loading quiz...</div>;
@@ -85,7 +85,7 @@ function Quiz() {
         Your browser does not support the video tag.
       </video>
       <div className="head">
-        <Header showNav={false} />
+        <Header isLoggedIn={true} />
       </div>
       <div className="main">
         {isQuizFinished ? (

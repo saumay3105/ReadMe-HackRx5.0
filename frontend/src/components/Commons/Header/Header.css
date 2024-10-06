@@ -1,67 +1,67 @@
 .header {
-    background: #333;
-    color: white;
-    padding: 15px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 0 20px;
-  }
-  
-  .header .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .header nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .header nav ul li {
-    margin: 0;
-  }
-  
-  .header nav ul li a {
-    color: rgb(9, 59, 84);
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  .header nav ul li a:hover {
-    text-decoration: underline;
-  }
-  
-  .btn-nav-main {
-    border: 2px solid rgb(35, 87, 140);
-    color: rgb(35, 87, 140);
-    padding: 8px 24px;
-    border-radius: 8px;
-  }
-  
-  .btn-nav-main:hover {
-    background-color: rgb(35, 87, 140);
-    color: #fff;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-    text-decoration: none;
-  }
- 
-  .logo:hover{
-    transform: scale(1.1);
-  }
-  .logo {
-    height: 50px; 
-    width: auto; 
-    display: block; 
-  }
-  
+  background: #333;
+  color: white;
+  padding: 15px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.header .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(9, 59, 84);
+}
+
+.header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.header nav ul li {
+  margin: 0;
+}
+
+.header nav ul li a {
+  color: rgb(9, 59, 84);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.header nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.btn-nav-main {
+  border: 2px solid rgb(35, 87, 140);
+  color: rgb(35, 87, 140);
+  padding: 8px 24px;
+  border-radius: 8px;
+}
+
+.btn-nav-main:hover {
+  background-color: rgb(35, 87, 140);
+  color: #fff;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+.logo {
+  height: 50px;
+  width: auto;
+  display: block;
+}

@@ -11,13 +11,12 @@ const TextToVideo = () => {
         <source src="/bg3.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <Header showNav={false} />
+      <Header isLoggedIn={true} />
       <div className="file-upload-container">
         <FileUpload />
-        
       </div>
     </div>
   );
-}
+};
 
 export default TextToVideo;
