@@ -18,13 +18,24 @@ from .tasks import generate_script_task, process_video_task
 @api_view(["POST"])
 def upload_document(request: HttpRequest):
     file = request.FILES.get("file")
-    video_length = request.data.get("video_length")  # Get video length from request
-    print(f"Received video length: {video_length}")
+    video_length = request.data.get("video_length") 
+    language = request.data.get("language")
+    print(f'the language is {language}')
+    # Validate input
     if not file or not file.name.endswith(".pdf"):
         return Response(
             {
                 "status": "error",
                 "message": "Invalid file format. Please provide the document in PDF format.",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    SUPPORTED_LANGUAGES = ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam", "Marathi", "Punjabi", "Urdu"]
+    if language not in SUPPORTED_LANGUAGES:
+        return Response(
+            {
+                "status": "error",
+                "message": f"Invalid language selection. Supported languages: {', '.join(SUPPORTED_LANGUAGES)}",
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -35,12 +46,11 @@ def upload_document(request: HttpRequest):
 
         # Save the job details to the database (initial status: queued)
         job = DocumentProcessingJob.objects.create(
-            job_id=job_id, file=file, status="queued", video_length=video_length
+            job_id=job_id, file=file, status="queued", video_length=video_length, language=language
         )
 
         # Trigger the Celery task asynchronously
-        generate_script_task.delay(job.job_id, video_length)
-        # Pass video_length to task
+        generate_script_task.delay(job.job_id, video_length, language)
 
         return Response(
             {
@@ -52,12 +62,11 @@ def upload_document(request: HttpRequest):
         )
 
     except Exception as e:
-        logging.error(e)
+        logging.error(f"Error processing upload: {str(e)}")
         return Response(
-            {"status": "error", "message": str(e)},
+            {"status": "error", "message": "An error occurred while processing the document."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
 
 @api_view(["GET"])
 def check_document_status(request: HttpRequest, job_id: uuid.UUID):

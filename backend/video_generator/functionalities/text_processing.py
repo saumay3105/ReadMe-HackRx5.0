@@ -17,7 +17,7 @@ def extract_text(file_path) -> str:
     return extracted_text
 
 
-def generate_script(docs_path:str,video_length: int) -> str:
+def generate_script(docs_path:str,video_length: int,language:str) -> str:
     load_dotenv(find_dotenv())
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel("gemini-1.5-flash")
@@ -34,7 +34,11 @@ def generate_script(docs_path:str,video_length: int) -> str:
     llm_prompt += (
         f"\n\nPlease make the script approximately {video_length} seconds long."
     )
-
+    if language!='English':
+        llm_prompt += (
+        f"\n\nPlease make the script in {language}."
+    )
+    
     response = model.generate_content([llm_prompt, sample_pdf])
     return response.text
 

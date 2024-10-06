@@ -78,7 +78,7 @@ const TextEditor = () => {
   return (
     <div className="editor-container">
       <Header showNav={false} />
-      <h2>Edit your script</h2>
+      <h2 className="upload-heading">Edit your script</h2>
       <textarea
         className="text-area"
         value={script}

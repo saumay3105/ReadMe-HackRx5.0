@@ -10,10 +10,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-  color: rgb(35, 87, 140);
-  margin-bottom: 20px;
-}
+
 
 .file-input {
   width: 100%;
@@ -82,4 +79,9 @@ h2 {
 .img-load{
   height:150px;
   width: 150px;
+}
+.upload-heading {
+  color: rgb(35, 87, 140);
+  font-weight: 700;
+  margin-bottom: 20px;
 }

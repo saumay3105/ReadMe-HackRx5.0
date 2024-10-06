@@ -45,4 +45,8 @@
   .submit-btn:hover {
     background-color: #0056b3;
   }
-  
+  .upload-heading {
+    color: rgb(35, 87, 140);
+    font-weight: 700;
+    margin-bottom: 20px;
+  }

@@ -12,7 +12,7 @@ from .functionalities.video_synthesis import generate_video_from_script
 
 
 @shared_task
-def generate_script_task(job_id: uuid.UUID, video_length: int):
+def generate_script_task(job_id: uuid.UUID, video_length: int,language:str):
     job = DocumentProcessingJob.objects.get(job_id=job_id)
     job.status = "processing"
     job.save()
@@ -20,7 +20,7 @@ def generate_script_task(job_id: uuid.UUID, video_length: int):
     try:
         file_path = job.file.path
         script = generate_script(
-            file_path, video_length
+            file_path, video_length,language
         )  # Pass video_length to generate_script
 
         # Update job status to 'successful' and save the generated script
