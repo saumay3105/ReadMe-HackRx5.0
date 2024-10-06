@@ -6,6 +6,7 @@ import "./Home.css";
 function Home() {
   return (
     <>
+
       <div className="hero">
         <video autoPlay muted loop className="background-video">
           <source src="/bg3.mp4" type="video/mp4" />
@@ -24,6 +25,11 @@ function Home() {
             <Link to="/text-to-video" className="btn-primary">
               Generate
             </Link>
+            <Link to="/login" className="btn-secondary">
+              Login
+            </Link>
+    
+
           </div>
         </div>
       </div>
@@ -60,6 +66,7 @@ function Home() {
             </p>
           </div>
         </section>
+        
       </main>
     </>
   );

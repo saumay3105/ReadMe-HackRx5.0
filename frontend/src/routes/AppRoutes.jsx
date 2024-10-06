@@ -7,6 +7,9 @@ import Quiz from "../pages/Quiz";
 import ScriptEditor from "../pages/ScriptEditor";
 import VideoPreview from "../pages/VideoPreview";
 import AnalyticsDashboard from "../pages/AnalyticsDashboard";
+import Login from "../pages/Login"; 
+import Signup from "../pages/Signup"; 
+
 // import Editor from "../pages/Editor";
 
 const AppRoutes = () => {
@@ -20,6 +23,8 @@ const AppRoutes = () => {
         <Route path="/script-editor" element={<ScriptEditor />} />
         <Route path="/video-preview" element={<VideoPreview />} />
         <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
+        <Route path="/login" element={<Login />} /> 
+        <Route path="/signup" element={<Signup />} /> 
         {/* <Route path="/editor" element={<Editor />} /> */}
       </Routes>
     </Router>
