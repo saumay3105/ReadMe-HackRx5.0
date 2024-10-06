@@ -10,14 +10,19 @@ function Header({ isLoggedIn = true }) {
           {!isLoggedIn ? (
             <ul>
               <li>
+                <Link to="/text-to-video" className="btn-nav-main">
+                  Generate
+                </Link>
+              </li>
+              <li>
                 <a href="#features">Features</a>
               </li>
               <li>
                 <a href="#about">About</a>
               </li>
               <li>
-                <Link to="/text-to-video" className="btn-nav-main">
-                  Generate
+                <Link to="/login" className="">
+                  Log-in
                 </Link>
               </li>
             </ul>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "./Login.css";
+import Header from "../../components/Commons/Header";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -63,52 +64,62 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <h2>Login</h2>
-        <form onSubmit={handleNormalLogin}>
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Password:</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="login-button">
-            Login
-          </button>
-        </form>
-        <hr />
+    <>
+      {" "}
+      <Header isLoggedIn={false} />
+      <div className="login-page">
+        <div className="login-container">
+          <h3 className="login-heading">Welcome Back</h3>
+          <form onSubmit={handleNormalLogin}>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Password:</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button type="submit" className="login-button">
+              Login
+            </button>
+          </form>
+          <hr />
 
-        <div className="login-options">
-          <button className="google-signin-button" onClick={handleGoogleLogin}>
-            <img
-              src="/google.png"
-              alt="Google Logo"
-              style={{ width: "20px", marginRight: "10px" }}
-            />
-            Sign in with Google
-          </button>
-          <p>
-            New User? <Link to="/signup">Register</Link>
-          </p>
+          <div className="login-options">
+            <button
+              className="google-signin-button"
+              onClick={handleGoogleLogin}
+            >
+              <img
+                src="/google.png"
+                alt="Google Logo"
+                style={{ width: "20px", marginRight: "10px" }}
+              />
+              Sign in with Google
+            </button>
+            <p>
+              New User?{" "}
+              <Link to="/signup" style={{ textDecoration: "underline" }}>
+                Register
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
       <ToastContainer />
-    </div>
+    </>
   );
 };
 

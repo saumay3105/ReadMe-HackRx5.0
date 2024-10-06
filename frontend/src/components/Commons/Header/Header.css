@@ -1,5 +1,4 @@
 .header {
-  background: #333;
   color: white;
   padding: 15px 0;
   display: flex;
@@ -43,10 +42,10 @@
 }
 
 .btn-nav-main {
-  border: 2px solid rgb(35, 87, 140);
-  color: rgb(35, 87, 140);
+  background-color: rgb(35, 87, 140);
+  color: #fff !important;
   padding: 8px 24px;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 
 .btn-nav-main:hover {

@@ -90,7 +90,9 @@ function VideoPreview() {
           {videoUrl && <video src={videoUrl} controls />}
         </div>
       )}
-      <button onClick={handleQuizGeneration}>Get Quiz</button>
+      <button className="video-preview-btn" onClick={handleQuizGeneration}>
+        Get Quiz
+      </button>
       <ToastContainer />
     </div>
   );

@@ -1,53 +1,15 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow-x: hidden;
-}
-
 .signup-page {
-    background-color: rgba(255, 255, 255, 1);
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
     height: 100vh;
 }
 
-.signup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    padding: 10px 20px;
-    z-index: 2;
-    background: transparent;
-}
-
-.logo img {
-    width: 100px;
-    height: auto;
-}
-
-.back-button {
-    background-color: transparent;
-    border: none;
-    color: rgb(35, 87, 140);
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.back-button:hover {
-    text-decoration: underline;
-}
 
 .signup-container {
-    max-width: auto;
-    height: 700px; 
     width: 500px;
     margin: auto;
-    padding: 20px;
+    padding: 20px 30px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fff;
@@ -58,7 +20,6 @@ html, body {
 .form-group input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fff;
@@ -70,17 +31,17 @@ html, body {
 }
 
 .signup-button {
-    background: rgb(35, 87, 140);
+    background: rgb(34, 112, 189);
     color: #fff;
     border: none;
-    padding: 15px 30px;
+    padding: 14px 60px;
     border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
 }
 
 .signup-button:hover {
-    background-color: rgb(1, 9, 19);
+    background-color: rgb(35, 87, 140);
 }
 
 .signup-options {
