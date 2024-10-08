@@ -5,7 +5,7 @@ function Header({ isLoggedIn = true }) {
   return (
     <header className="header">
       <div className="header__container">
-        <span className="logo">ReadMe.AI</span>
+        <span className="logo"><Link to='/'>ReadMe.ai</Link> </span>
         <nav>
           {!isLoggedIn ? (
             <ul>
