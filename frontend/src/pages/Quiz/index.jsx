@@ -1,140 +1,265 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Quiz.css";
-import Question from "../../components/Questions";
+import trophy from "../../assets/trophy.png";
+import streakicon from "../../assets/streak.png";
+import higheststreakicon from "../../assets/higheststreakicon.png";
+import timericon from "../../assets/timericon.png";
+import correctSound from "../../assets/correctsound.mp3";
+import incorrectSound from "../../assets/incorrectsound.mp3";
+import Result from "../Result";
+import quizData from "./quizData"; // Import the quiz data
 import Header from "../../components/Commons/Header";
 
 function Quiz() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [points, setPoints] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState({});
+  const [selectedOption, setSelectedOption] = useState(null);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
-  const [quizData, setQuizData] = useState([]);
+  const [answerLocked, setAnswerLocked] = useState(false);
+  const [timer, setTimer] = useState(30);
+  const [streak, setStreak] = useState(0);
+  const [highestStreak, setHighestStreak] = useState(0);
+  const [questionResults, setQuestionResults] = useState([]);
+  const [timeSpent, setTimeSpent] = useState([]);
+  const [finalScore, setFinalScore] = useState(0);
+  const [isTimeoutOccurred, setIsTimeoutOccurred] = useState(false);
 
   useEffect(() => {
-    const fetchedQuizData = JSON.parse(localStorage.getItem("quizQuestions"));
+    let interval;
 
-    if (fetchedQuizData) {
-      setQuizData(fetchedQuizData);
+    if (timer > 0 && !answerLocked && !isTimeoutOccurred) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0 && !isTimeoutOccurred) {
+      handleTimeout();
+    }
+
+    return () => clearInterval(interval);
+  }, [timer, answerLocked, isTimeoutOccurred]);
+
+  const handleOptionClick = (option) => {
+    if (answerLocked || isTimeoutOccurred) return;
+
+    const currentQuestion = quizData[currentQuestionIndex];
+
+    const isCorrect = option === currentQuestion.correctAnswer;
+
+    const audio = new Audio(isCorrect ? correctSound : incorrectSound);
+    audio.play();
+
+    setAnswerLocked(true);
+    setSelectedOption(option);
+    setTimeSpent((prev) => [...prev, 30 - timer]);
+
+    if (isCorrect) {
+      setPoints((prevPoints) => prevPoints + 10);
+      setStreak((prevStreak) => {
+        const newStreak = prevStreak + 1;
+        setHighestStreak((prevHighest) => Math.max(prevHighest, newStreak));
+        return newStreak;
+      });
     } else {
-      console.error("No quiz questions found.");
+      setStreak(0);
     }
-  }, []);
 
-  const handleOptionChange = (e) => {
-    const { value } = e.target;
-    setSelectedOptions({
-      ...selectedOptions,
-      [currentQuestionIndex]: value,
-    });
+    setQuestionResults((prevResults) => [...prevResults, { isCorrect }]);
+
+    if (currentQuestionIndex === quizData.length - 1) {
+      finishQuiz(isCorrect);
+    }
   };
 
-  const handleSubmit = () => {
-    const nextQuestionIndex = currentQuestionIndex + 1;
-    if (nextQuestionIndex < 9) {
-      setCurrentQuestionIndex(nextQuestionIndex);
+  const handleTimeout = () => {
+    if (isTimeoutOccurred) return;
+
+    setIsTimeoutOccurred(true);
+    const audio = new Audio(incorrectSound);
+    audio.play();
+
+    setAnswerLocked(true);
+    setSelectedOption(null);
+    setTimeSpent((prev) => [...prev, 30]);
+    setStreak(0);
+    setQuestionResults((prevResults) => [...prevResults, { isCorrect: false }]);
+
+    if (currentQuestionIndex === quizData.length - 1) {
+      finishQuiz(false);
     } else {
-      setIsQuizFinished(true);
-      calculateScore();
+      setTimeout(handleNextQuestion, 2000); // Auto-move to next question after 2 seconds
     }
   };
 
-  const handlePrevious = () => {
-    const prevQuestionIndex = currentQuestionIndex - 1;
-    if (prevQuestionIndex >= 0) {
-      setCurrentQuestionIndex(prevQuestionIndex);
-    }
-  };
+  const finishQuiz = (lastQuestionCorrect) => {
+    setIsQuizFinished(true);
 
-  const handleNext = () => {
-    const nextQuestionIndex = currentQuestionIndex + 1;
-    if (nextQuestionIndex < 10) {
-      setCurrentQuestionIndex(nextQuestionIndex);
-    }
-  };
+    const allResults = [...questionResults, { isCorrect: lastQuestionCorrect }];
+    let currentStreak = 0;
+    let maxStreak = 0;
+    let correctAnswers = 0;
 
-  const calculateScore = () => {
-    let parsedQuizData;
-
-    try {
-      parsedQuizData =
-        typeof quizData === "string" ? JSON.parse(quizData) : quizData;
-    } catch (error) {
-      console.error("Failed to parse quizData:", error);
-      return;
-    }
-
-    let score = 0;
-    parsedQuizData.forEach((question, index) => {
-      if (selectedOptions[index] === question.correctAnswer) {
-        score += 1;
+    allResults.forEach((result) => {
+      if (result.isCorrect) {
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+        correctAnswers++;
+      } else {
+        currentStreak = 0;
       }
     });
-    setPoints(score);
+
+    const finalScore = correctAnswers * 10 + maxStreak * 10;
+    setFinalScore(finalScore);
+
+    const analyticsData = {
+      finalScore,
+      highestStreak: maxStreak,
+      questionResults: allResults,
+      timeSpent: [...timeSpent, 30 - timer],
+      correctAnswers,
+      totalQuestions: quizData.length,
+    };
+
+    console.log("Analytics Data:", analyticsData);
+
+    fetch("http://localhost:8000/api/results/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(analyticsData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Analytics sent successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error sending analytics:", error);
+      });
   };
 
-  if (quizData.length === 0) {
-    return <div>Loading quiz...</div>;
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < quizData.length - 1) {
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      setSelectedOption(null);
+      setAnswerLocked(false);
+      setTimer(30);
+      setIsTimeoutOccurred(false);
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentQuestionIndex(0);
+    setPoints(0);
+    setSelectedOption(null);
+    setIsQuizFinished(false);
+    setAnswerLocked(false);
+    setTimer(30);
+    setStreak(0);
+    setHighestStreak(0);
+    setQuestionResults([]);
+    setTimeSpent([]);
+    setFinalScore(0);
+    setIsTimeoutOccurred(false);
+  };
+
+  if (isQuizFinished) {
+    return (
+      <Result
+        finalScore={finalScore}
+        correctAnswers={questionResults.filter((r) => r.isCorrect).length}
+        totalQuestions={quizData.length}
+        highestStreak={highestStreak}
+        timeSpent={timeSpent}
+        onRestart={handleRestart}
+      />
+    );
   }
 
-  const currentQuestion = JSON.parse(quizData)[currentQuestionIndex];
+  const currentQuestion = quizData[currentQuestionIndex];
 
   return (
-    <div className="quiz-container">
-      <video autoPlay muted loop className="background-video">
-        <source src="/bg3.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <div className="head">
-        <Header isLoggedIn={true} />
-      </div>
-      <div className="main">
-        {isQuizFinished ? (
-          <div className="result-container">
-            <h2>
-              Your Score: {points} out of {10}
-            </h2>
+    <>
+      <Header isLoggedIn={true} />
+      <div className="quiz-container">
+        <div className="quiz-header">
+          <div className="quiz-question-number">
+            Question {currentQuestionIndex + 1} / {quizData.length}
           </div>
-        ) : (
-          <div className="question-container">
-            <div className="score">Score: {points}</div>
-            <Question
-              title={`Question ${currentQuestionIndex + 1}`}
-              question={currentQuestion.question}
-              options={currentQuestion.options}
-              selectedOption={selectedOptions[currentQuestionIndex] || ""}
-              handleOptionChange={handleOptionChange}
-              handleSubmit={handleSubmit}
-            />
-            <div className="navigation-buttons">
-              <button
-                className="prev-btn"
-                onClick={handlePrevious}
-                disabled={currentQuestionIndex === 0}
+          <div className="quiz-streak">
+            <img src={streakicon} alt="" />
+            Streak: {streak}
+          </div>
+          <div className="quiz-score">
+            <img src={trophy} alt="" />
+            Score: {points} points
+          </div>
+          <div className="quiz-highest-streak">
+            <img src={higheststreakicon} alt="" />
+            Highest Streak: {highestStreak}
+          </div>
+          <div className="quiz-timer">
+            <img src={timericon} alt="" />
+            Time: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}
+          </div>
+        </div>
+
+        <div className="question-container">
+          <h3 className="question">{currentQuestion.question}</h3>
+          <div className="options">
+            {currentQuestion.options.map((option, index) => {
+              const isCorrect = option === currentQuestion.correctAnswer;
+              const isIncorrect =
+                answerLocked && selectedOption === option && !isCorrect;
+              const isSelected = selectedOption === option;
+
+              return (
+                <button
+                  key={index}
+                  className={`option 
+                  ${isCorrect && answerLocked ? "correct" : ""}
+                  ${isIncorrect ? "incorrect" : ""}
+                  ${isSelected ? "selected" : ""}
+                  ${answerLocked ? "disabled-hover" : ""}
+                `}
+                  onClick={() => handleOptionClick(option)}
+                  disabled={answerLocked}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="explanation-and-next">
+            {answerLocked && (
+              <p
+                className={`explanation ${
+                  selectedOption === currentQuestion.correctAnswer
+                    ? "correct-explanation"
+                    : "incorrect-explanation"
+                }`}
               >
-                Previous
-              </button>
-              {currentQuestionIndex < 10 - 1 ? (
+                {selectedOption === currentQuestion.correctAnswer
+                  ? currentQuestion.explanation
+                  : `That's not the right answer! ${currentQuestion.explanation}`}
+              </p>
+            )}
+            {answerLocked && (
+              <div className="navigation-buttons">
                 <button
                   className="next-btn"
-                  onClick={handleNext}
-                  disabled={!selectedOptions[currentQuestionIndex]}
+                  onClick={handleNextQuestion}
+                  disabled={!answerLocked}
                 >
                   Next
                 </button>
-              ) : (
-                <button
-                  className="submit-btn"
-                  onClick={handleSubmit}
-                  disabled={!selectedOptions[currentQuestionIndex]}
-                >
-                  Submit
-                </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
