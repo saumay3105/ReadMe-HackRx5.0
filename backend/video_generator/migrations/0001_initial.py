@@ -17,14 +17,72 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DocumentProcessingJob',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('job_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('file', models.FileField(upload_to=video_generator.models.upload_to_unique_filename)),
-                ('status', models.CharField(choices=[('queued', 'Queued'), ('processing', 'Processing'), ('successful', 'Successful'), ('failed', 'Failed')], max_length=50)),
-                ('script', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('video_length', models.IntegerField(default=60)),
-                ('language', models.TextField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "job_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=video_generator.models.upload_to_unique_filename
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("queued", "Queued"),
+                            ("processing", "Processing"),
+                            ("successful", "Successful"),
+                            ("failed", "Failed"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("script", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("video_length", models.IntegerField(default=60)),
+                ("language", models.TextField(blank=True, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Video",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "video_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField(blank=True, null=True)),
+                ("video_file", models.FileField(upload_to="generated_videos/")),
+                ("duration", models.DurationField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("published", models.BooleanField(default=False)),
+                (
+                    "document_job",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="video_generator.documentprocessingjob",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(

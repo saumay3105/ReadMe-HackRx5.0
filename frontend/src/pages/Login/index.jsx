@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import "./Login.css";
-import Header from "../../components/Commons/Header";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const { setUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -32,10 +34,12 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Login successful:", data);
+        localStorage.setItem("my-app-auth", data.access);
         toast.success("Login Successful!", {
           position: "top-center",
         });
+        setUser(data.user);
+        navigate("/explore");
       } else {
         const error_messages = data["non_field_errors"];
         error_messages.forEach((e) => {
@@ -65,8 +69,6 @@ const Login = () => {
 
   return (
     <>
-      {" "}
-      <Header isLoggedIn={false} />
       <div className="login-page">
         <div className="login-container">
           <h3 className="login-heading">Welcome Back</h3>

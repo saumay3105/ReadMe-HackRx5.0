@@ -12,11 +12,19 @@ function Home() {
           <source src="/bg3.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <Header isLoggedIn={false} />
         <div className="hero-content">
-          <h1 className="welcome-heading">
-            <span className="clip-kadabra">ReadMe</span>
-          </h1>
+          <h2 className="hero-heading">
+            <span>
+              Convert your
+              <span className="hero__boring-text"> boring texts</span>
+            </span>
+            <span>
+              into
+              <span className="hero__gradient-text">
+                &nbsp;Interactive Visual Content
+              </span>
+            </span>
+          </h2>
           <p>Unleash the Magic of AI-Powered Text-to-Video Generation</p>
           <div className="buttons">
             <a href="#features" className="btn-secondary">
