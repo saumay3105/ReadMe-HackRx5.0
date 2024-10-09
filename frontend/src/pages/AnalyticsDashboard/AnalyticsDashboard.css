@@ -25,26 +25,20 @@
     max-width: 1200px;
   }
   
-  .charts-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
- 
-  .overview-card, .best-videos-card, .difficult-quiz-card, .views-chart, .user-age-chart {
-    background-color: #ffffff; 
+  .overview-card, .best-videos-card, .difficult-quiz-card {
+    background-color: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    height: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
   
   .positive {
-    color: #4caf50;
+    color: green;
   }
   
   .negative {
-    color: #f44336;
+    color: red;
   }
   
   .progress-bar {
