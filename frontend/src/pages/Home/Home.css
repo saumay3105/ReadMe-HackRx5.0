@@ -1,14 +1,6 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow-x: hidden;
-}
-
 .hero {
   position: relative;
-  height: 100vh;
-  color: rgb(9, 59, 84);
+  height: calc(100vh - 66px);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -26,32 +18,35 @@ html, body {
   z-index: -1;
 }
 
-.header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-  background: transparent;
-}
-
 .hero-content {
   position: relative;
   z-index: 1;
   padding: 0;
 }
 
-.welcome-heading {
+.hero-heading {
   font-size: 3rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  font-weight: 100;
+  color: #4A566F;
 }
 
-.clip-kadabra {
-  font-weight: bold;
-  background: #A7CFDF;
-  background: linear-gradient(to right, #A7CFDF 0%, #23538A 100%);
+.hero__boring-text {
+  font-weight: 800;
+  background: rgb(211,211,211);
+  background: linear-gradient(150deg, rgba(211,211,211,1) 0%, rgba(111,111,111,1) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.hero__gradient-text {
+  font-weight: 800;
+  background: rgb(251,185,108);
+background: linear-gradient(290deg, rgb(44, 173, 238) 0%, rgba(0,106,209,1) 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 }
 
 .hero p {

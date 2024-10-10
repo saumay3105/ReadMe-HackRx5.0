@@ -9,7 +9,11 @@ function VideoPreview() {
   const navigate = useNavigate();
 
   const [jobId, setJobId] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoData, setVideoData] = useState({
+    title: "",
+    description: "",
+    videoUrl: "",
+  });
   const [loading, setLoading] = useState(true); // Start loading initially
   const [error, setError] = useState("");
 
@@ -36,7 +40,10 @@ function VideoPreview() {
 
       // Create a URL for the received blob (video)
       const videoBlobUrl = URL.createObjectURL(response.data);
-      setVideoUrl(videoBlobUrl);
+      setVideoData((prevData) => ({
+        ...prevData,
+        videoUrl: videoBlobUrl,
+      }));
       setLoading(false); // Stop loading after video is received
     } catch (err) {
       console.error(err);
@@ -71,30 +78,87 @@ function VideoPreview() {
     }
   };
 
-  return (
-    <div className="video-preview-container">
-      <video autoPlay muted loop className="background-video">
-        <source src="/bg3.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <Header isLoggedIn={true} />
-      <h1>Video Preview</h1>
+  useEffect(() => {
+    // Simulating API fetch
+    const fetchVideoData = async () => {
+      // Replace this with your actual API call
+      const response = await fetch("https://api.example.com/video");
+      const data = await response.json();
+      setVideoData(data);
+    };
 
-      {error && <div className="error">{error}</div>}
-      {loading ? (
-        <div className="loading-message">
-          Your video is being generated, please wait...
+    fetchVideoData();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setVideoData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <>
+      <div className="video-preview-container">
+        <div className="video-content">
+          <h1>Video Preview</h1>
+          <div className="video-container">
+            {error && <div className="error">{error}</div>}
+            {loading ? (
+              <div className="loading-message">
+                Your video is being generated, please wait...
+              </div>
+            ) : (
+              videoData.videoUrl && <video src={videoData.videoUrl} controls />
+            )}
+          </div>
+          <button className="video-preview-btn" onClick={handleQuizGeneration}>
+            Get Quiz
+          </button>
         </div>
-      ) : (
-        <div className="video-container">
-          {videoUrl && <video src={videoUrl} controls />}
+
+        <div className="video-preview-sidebar">
+          <h3>Video Details</h3>
+          <div className="video-info">
+            <input
+              type="text"
+              name="title"
+              value={videoData.title}
+              onChange={handleInputChange}
+              className="video-title"
+              placeholder="Title goes here"
+            />
+            <textarea
+              name="description"
+              value={videoData.description}
+              onChange={handleInputChange}
+              className="video-description"
+              placeholder="Description goes here"
+              rows="5"
+            />
+            <div>
+              <span>Language: </span>English
+            </div>
+            <div>
+              <span>Date created: </span>16 Jan 2024
+            </div>
+            <div>
+              <span>Video URL:</span>
+              <input
+                type="text"
+                value="asdjsafsghfsahfuiafnsafjsfsanjhdsadbdadsdsafas"
+                disabled
+              />
+            </div>
+            <div>
+              <button className="btn">Publish</button>
+            </div>
+          </div>
         </div>
-      )}
-      <button className="video-preview-btn" onClick={handleQuizGeneration}>
-        Get Quiz
-      </button>
+      </div>
       <ToastContainer />
-    </div>
+    </>
   );
 }
 

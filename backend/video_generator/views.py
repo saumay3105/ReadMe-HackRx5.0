@@ -30,7 +30,7 @@ def upload_document(request: HttpRequest):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-    SUPPORTED_LANGUAGES = ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam", "Marathi", "Punjabi", "Urdu"]
+    SUPPORTED_LANGUAGES = ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam", "Marathi", "Punjabi", "Urdu", "Gujrati"]
     if language not in SUPPORTED_LANGUAGES:
         return Response(
             {

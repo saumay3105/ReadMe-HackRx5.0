@@ -1,17 +1,31 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
 import "./Header.css";
 
-function Header({ isLoggedIn = true }) {
+function Header() {
+  const { user, loading } = useContext(AuthContext);
+
   return (
     <header className="header">
       <div className="header__container">
-        <span className="logo"><Link to='/'>ReadMe.ai</Link> </span>
+        <Link to="/">
+          <span className="logo">
+            <img
+              width="30"
+              height="45"
+              src="https://pbs.twimg.com/profile_images/1664193730826366978/6pjJJhSV_400x400.jpg"
+              alt="Logo"
+            />
+            ReadMe.AI
+          </span>
+        </Link>
         <nav>
-          {!isLoggedIn ? (
+          {!user ? (
             <ul>
               <li>
-                <Link to="/text-to-video" className="btn-nav-main">
-                  Generate
+                <Link to="/upload-document" className="btn-nav-main">
+                  Get Started
                 </Link>
               </li>
               <li>
@@ -21,9 +35,7 @@ function Header({ isLoggedIn = true }) {
                 <a href="#about">About</a>
               </li>
               <li>
-                <Link to="/login" className="">
-                  Log-in
-                </Link>
+                <Link to="/login">Log-in</Link>
               </li>
             </ul>
           ) : (
@@ -35,10 +47,10 @@ function Header({ isLoggedIn = true }) {
                 <Link to="/upload-document">Create</Link>
               </li>
               <li>
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/analytics-dashboard">Dashboard</Link>
               </li>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link to="/profile">{user.full_name.split(" ")[0]}</Link>
               </li>
             </ul>
           )}

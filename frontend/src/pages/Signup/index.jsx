@@ -68,7 +68,6 @@ const Signup = () => {
 
   return (
     <>
-      <Header isLoggedIn={false} />
       <div className="signup-page">
         <div className="signup-container">
           <h2>Signup</h2>

@@ -27,6 +27,7 @@ function Language_Selector({ setSelectedLanguage }) {
       <Dropdown.Item eventKey="Bengali">Bengali</Dropdown.Item>
       <Dropdown.Item eventKey="Punjabi">Punjabi</Dropdown.Item>
       <Dropdown.Item eventKey="Urdu">Urdu</Dropdown.Item>
+      <Dropdown.Item eventKey="Gujrati">Gujrati</Dropdown.Item>
     </DropdownButton>
   );
 }

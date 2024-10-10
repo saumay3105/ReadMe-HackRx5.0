@@ -1,9 +1,15 @@
 .video-preview-container {
+  position: relative;
   display: flex;
+  flex-direction: row;
   justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 80px;
+  background-color: #d2e7ff;
+}
+
+.video-content {
+  width: 80%;
+  padding: 20px 64px;
+
 }
 
 .video-preview-btn {
@@ -18,31 +24,89 @@
   margin-bottom: 2rem;
 }
 
-button:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
 .error {
   color: red;
-  margin-bottom: 1rem;
 }
 
 .video-container {
-  margin-top: 2rem;
-  min-height: 480px;
+  min-height: 360px;
   min-width: 640px;
-  border: 2px solid white;
-  border-radius: 8px;
+  width: 640px;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
 }
 
 video {
-  max-width: 750px;
   height: auto;
-  border: 1px solid #ccc;
-  border-radius: 4px;
 }
+
 h1,
 .loading-message {
   color: rgb(9, 59, 84);
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.video-preview-sidebar {
+  background-color: #23578C;
+  color: #fff;
+  height: 100vh;
+  width: 20%;
+  padding: 1rem;
+}
+
+.video-preview-sidebar h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.video-preview-sidebar .btn {
+  background-color: #007bff;
+  padding: 8px 16px;
+  color: #fff;
+}
+
+.video-preview-sidebar .btn:hover {
+  background-color: #026ada;
+  padding: 8px 16px;
+  color: #fff;
+}
+
+.video-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.video-title, .video-description {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #d2e7ff;
+}
+
+.video-title::placeholder, .video-description::placeholder {
+  color: #333;
+}
+
+.video-title {
+  font-size: 1em;
+}
+
+.video-description {
+  font-size: 1em;
+  height: 100%;
+  resize: vertical;
+}
+
+.video-info input:disabled {
+  background-color: #d2e7ff;
+  width: 100%;
 }
