@@ -66,6 +66,18 @@ def generate_keywords(text: str):
 
     return ast.literal_eval(trimmed_response)
 
+def generate_keywords_fast(text: str):
+    GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    llm_prompt = """
+    Given the extracted content from a document, generate 20 one or max three words keywords for use as prompts in image generation from the provided text. Each phrase should be vivid and descriptive, evoking clear visual imagery while avoiding any company names, trademarked terms, or specific generative AI model names. The phrases should be suitable for a variety of creative concepts and should inspire diverse artistic interpretations. Output should be a python list with no name just list
+    """
+    response = model.generate_content(llm_prompt + text)
+    start_idx = response.text.find("[")
+    end_idx = response.text.rfind("]") + 1
+    trimmed_response = response.text[start_idx:end_idx]
 
+    return ast.literal_eval(trimmed_response)
 def get_prompts_from_script(script: str) -> List[str]:
     return [script]

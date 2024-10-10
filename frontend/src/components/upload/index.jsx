@@ -12,8 +12,9 @@ const FileUpload = () => {
   const [loading, setLoading] = useState(false);
   const [videoLength, setVideoLength] = useState([60, 300]);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [processingMode, setProcessingMode] = useState("fast");
   const navigate = useNavigate();
-  
+
   const handleFileChange = (event) => {
     setSelectedFiles(Array.from(event.target.files));
   };
@@ -30,6 +31,7 @@ const FileUpload = () => {
     formData.append("file", selectedFiles[0]);
     formData.append("video_length", videoLength[0]);
     formData.append("language", selectedLanguage);
+    formData.append("processing_mode", processingMode);
 
     setLoading(true); // Set loading state
 
@@ -85,7 +87,7 @@ const FileUpload = () => {
     return (
       <div className="loading-container">
         <h2 className="upload-heading">Processing your document...</h2>
-        <img src='./public/load-35.gif' alt="Loading..." className="img-load" />
+        <img src="./public/load-35.gif" alt="Loading..." className="img-load" />
       </div>
     );
   }
@@ -108,9 +110,30 @@ const FileUpload = () => {
           </ul>
         )}
       </div>
-      
+
       <VideoLengthSelector setVideoLength={setVideoLength} />
       <Language_Selector setSelectedLanguage={setSelectedLanguage} />
+      {/* Radio buttons for processing mode */}
+      <div className="processing-mode">
+        <label>
+          <input
+            type="radio"
+            value="fast"
+            checked={processingMode === "fast"}
+            onChange={() => setProcessingMode("fast")}
+          />
+          Fast
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="high-quality"
+            checked={processingMode === "high-quality"}
+            onChange={() => setProcessingMode("high-quality")}
+          />
+          High Quality
+        </label>
+      </div>
       <ToastContainer />
       <div className="buttons">
         <button className="upload-button" onClick={handleUpload}>

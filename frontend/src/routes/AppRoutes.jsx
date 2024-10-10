@@ -12,6 +12,7 @@ import Signup from "../pages/Signup";
 import Explore from "../pages/Explore";
 import Header from "../components/Commons/Header";
 import PrivateRoute from "./PrivateRoutes";
+import VideoPlayer from "../pages/VideoPlayer";
 
 // import Editor from "../pages/Editor";
 
@@ -87,6 +88,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/explore" element={<Explore videos={sampleVideos} />} />
+        <Route path="/video-player" element={<VideoPlayer/>} />
         {/* <Route path="/editor" element={<Editor />} /> */}
       </Routes>
     </Router>

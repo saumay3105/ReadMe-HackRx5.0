@@ -3,6 +3,7 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "react-bootstrap": "^2.10.5",
-    "react-google-charts": "^5.1.0"
+    "react-google-charts": "^5.1.0",
+    "react-player": "^2.16.0"
   }
 }
