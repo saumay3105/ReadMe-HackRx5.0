@@ -2,21 +2,22 @@ import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useControls } from "leva";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
 import * as THREE from "three";
 
-// Remap the visemes to the available blend shapes
 const corresponding = {
-  A: "mouthOpen",      // AA or similar open-mouth sounds
-  B: "mouthSmile",     // PP or similar closed-mouth sounds
-  C: "mouthSmile",     // KK or similar sounds
-  D: "mouthOpen",      // AA
-  E: "mouthOpen",      // O
-  F: "mouthSmile",     // FF or similar
-  G: "mouthSmile",     // TH or similar
-  H: "mouthSmile",     // KK or similar
-  X: "mouthSmile",     // PP or similar
+  A: "jawOpen",
+  B: "mouthFunnel",
+  E: "mouthClose",
+  F: "mouthPucker",
+  G: "mouthShrugUpper",
+  L: "tongueOut",
+  M: "mouthRollLower",
+  O: "mouthFunnel",
+  P: "mouthRollUpper",
+  R: "mouthShrugLower",
+  W: "cheekPuff",
 };
+
 
 export function Avatar(props) {
   const {
@@ -31,19 +32,39 @@ export function Avatar(props) {
     smoothMorphTarget: true,
     morphTargetSmoothing: 0.5,
     script: {
-      value: "welcome",
-      options: ["welcome", "pizzas"],
+      value: "introduction",
+      options: ["introduction", "summary"],
     },
   });
 
   const audio = useMemo(() => new Audio(`/audios/${script}.mp3`), [script]);
   const jsonFile = useLoader(THREE.FileLoader, `audios/${script}.json`);
   const lipsync = JSON.parse(jsonFile);
+  const initialPosition = useRef(new THREE.Vector3());
+  const group = useRef();
+
+  useEffect(() => {
+    if (group.current) {
+      initialPosition.current.copy(group.current.position);
+    }
+  }, []);
 
   useFrame(() => {
     const currentAudioTime = audio.currentTime;
+
     if (audio.paused || audio.ended) {
       setAnimation("Idle");
+
+      Object.keys(nodes.Wolf3D_Head.morphTargetDictionary).forEach((key) => {
+        nodes.Wolf3D_Head.morphTargetInfluences[
+          nodes.Wolf3D_Head.morphTargetDictionary[key]
+        ] = 0;
+      });
+
+      nodes.Wolf3D_Head.morphTargetInfluences[
+        nodes.Wolf3D_Head.morphTargetDictionary["Basis"]
+      ] = 1;
+
       return;
     }
 
@@ -92,22 +113,38 @@ export function Avatar(props) {
             morphTargetSmoothing
           );
         }
-
         break;
       }
+    }
+
+    if (group.current) {
+      group.current.position.clamp(
+        new THREE.Vector3(
+          initialPosition.current.x - 0.5,
+          initialPosition.current.y - 0.5,
+          initialPosition.current.z - 0.5
+        ),
+        new THREE.Vector3(
+          initialPosition.current.x + 0.5,
+          initialPosition.current.y + 0.5,
+          initialPosition.current.z + 0.5
+        )
+      );
     }
   });
 
   useEffect(() => {
     nodes.Wolf3D_Head.morphTargetInfluences[
-      nodes.Wolf3D_Head.morphTargetDictionary["mouthOpen"]
+      nodes.Wolf3D_Head.morphTargetDictionary["Basis"]
     ] = 1;
+    audio.src = `/audios/${script}.mp3`;
+
     if (playAudio) {
       audio.play();
-      if (script === "welcome") {
+      if (script === "introduction") {
         setAnimation("Greeting");
-      } else {
-        setAnimation("Angry");
+      } else if (script === "summary") {
+        setAnimation("Idle");
       }
     } else {
       setAnimation("Idle");
@@ -115,31 +152,32 @@ export function Avatar(props) {
     }
   }, [playAudio, script]);
 
-  const { nodes, materials } = useGLTF("/models/66f5188b68e49d947d45a618 (3).glb");
+  const { nodes, materials } = useGLTF("/models/FemaleExtraBlends.glb");
   const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
-  const { animations: angryAnimation } = useFBX(
-    "/animations/Angry Gesture.fbx"
-  );
   const { animations: greetingAnimation } = useFBX(
     "/animations/Standing Greeting.fbx"
   );
 
   idleAnimation[0].name = "Idle";
-  angryAnimation[0].name = "Angry";
   greetingAnimation[0].name = "Greeting";
 
   const [animation, setAnimation] = useState("Idle");
-
-  const group = useRef();
   const { actions } = useAnimations(
-    [idleAnimation[0], angryAnimation[0], greetingAnimation[0]],
+    [idleAnimation[0], greetingAnimation[0]],
     group
   );
 
   useEffect(() => {
-    actions[animation].reset().fadeIn(0.5).play();
-    return () => actions[animation].fadeOut(0.5);
-  }, [animation]);
+    if (actions[animation]) {
+      actions[animation].reset().fadeIn(0.5).play();
+    }
+
+    return () => {
+      if (actions[animation]) {
+        actions[animation].fadeOut(0.5);
+      }
+    };
+  }, [animation, actions]);
 
   useFrame((state) => {
     if (headFollow) {
@@ -211,4 +249,4 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload("/models/66f5188b68e49d947d45a618 (3).glb");
+useGLTF.preload("/models/FemaleExtraBlends.glb");
