@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "../../components/Commons/Header";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import QuizPreview from "../../components/Quiz-Preview";
 import "./VideoPreview.css";
 
 function VideoPreview() {
@@ -15,7 +16,9 @@ function VideoPreview() {
     videoUrl: "",
   });
   const [loading, setLoading] = useState(true); // Start loading initially
+  const [quizLoading, setQuizLoading] = useState(false); // For quiz generation loading
   const [error, setError] = useState("");
+  const [questions, setQuestions] = useState();
 
   useEffect(() => {
     // Retrieve jobId from local storage
@@ -59,22 +62,28 @@ function VideoPreview() {
     }
 
     try {
+      setQuizLoading(true); // Start loading for quiz generation
       toast.success("Generating questions. Please wait.");
       const questionsResponse = await axios.post(
         `http://127.0.0.1:8000/generate-questions/${jobId}/`
       );
 
-      const questions = questionsResponse.data.questions;
+      let questions = JSON.parse(questionsResponse.data.questions);
+
+      console.log(questions);
 
       if (questions) {
         localStorage.setItem("quizQuestions", JSON.stringify(questions));
-        toast.success("Questions generated successfully.");
-        navigate("/quiz");
+        setQuestions(questions);
+        // Stop the quiz loading animation
+        setQuizLoading(false);
       } else {
+        setQuizLoading(false);
         toast.error("Failed to generate quiz questions.");
       }
     } catch (error) {
       toast.error("Failed to generate quiz questions: " + error.message);
+      setQuizLoading(false);
     }
   };
 
@@ -113,9 +122,23 @@ function VideoPreview() {
               videoData.videoUrl && <video src={videoData.videoUrl} controls />
             )}
           </div>
-          <button className="video-preview-btn" onClick={handleQuizGeneration}>
-            Get Quiz
-          </button>
+
+          {!quizLoading && !questions && (
+            <button
+              className="video-preview-btn"
+              onClick={handleQuizGeneration}
+            >
+              Get Quiz
+            </button>
+          )}
+
+          {quizLoading && (
+            <div className="loading-message">
+              Generating quiz, please wait...
+            </div>
+          )}
+
+          {questions && <QuizPreview questions={questions} />}
         </div>
 
         <div className="video-preview-sidebar">

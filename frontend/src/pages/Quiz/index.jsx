@@ -7,7 +7,7 @@ import timericon from "../../assets/timericon.png";
 import correctSound from "../../assets/correctsound.mp3";
 import incorrectSound from "../../assets/incorrectsound.mp3";
 import Result from "../Result";
-import quizData from "./quizData"; // Import the quiz data
+import quizData from "./quizData";
 import Header from "../../components/Commons/Header";
 
 function Quiz() {
