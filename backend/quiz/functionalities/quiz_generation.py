@@ -46,6 +46,7 @@ def generate_quiz_questions(text: str) -> str:
     - The correct answers are accurate and based on the provided text.
     - The questions are a mix of different types (multiple-choice, true/false, fill-in-the-blanks).
     - Each question is labeled with the appropriate difficulty level: "Easy," "Medium," or "Hard". 
+    - In total there must be 20 questions. All type true-false, MCQ's and Fill in the blanks(with 3 options) must be present.
     - I need 10 questions for the quiz and 10 subsitutes of only easy and medium type. 
     - Provide a detailed explanations for each correct answer.
     
