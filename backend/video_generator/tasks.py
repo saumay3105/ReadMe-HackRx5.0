@@ -12,7 +12,7 @@ from .functionalities.video_synthesis import generate_video_from_script
 
 
 @shared_task
-def generate_script_task(job_id: uuid.UUID, video_length: int,language:str):
+def generate_script_task(job_id: uuid.UUID, video_length: int,language:str,speed:str):
     job = DocumentProcessingJob.objects.get(job_id=job_id)
     job.status = "processing"
     job.save()

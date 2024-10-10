@@ -84,3 +84,8 @@
   font-weight: 700;
   margin-bottom: 20px;
 }
+
+.processing-mode{
+  display: flex;
+  gap: 10px;
+}

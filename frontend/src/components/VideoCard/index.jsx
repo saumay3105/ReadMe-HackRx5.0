@@ -1,6 +1,6 @@
 import React from "react";
 import "./VideoCard.css";
-
+import { Link } from "react-router-dom";
 const VideoCard = ({ video }) => {
   const truncateDescription = (text, maxLength) => {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
@@ -15,22 +15,24 @@ const VideoCard = ({ video }) => {
   };
 
   return (
-    <div className="video-card">
-      <div className="thumbnail">
-        <img src={video.thumbnail} alt={video.title} />
-        <span className="duration">{video.duration}</span>
-      </div>
-      <div className="details">
-        <h3 className="title">{video.title}</h3>
-        <p className="description">
-          {truncateDescription(video.description, 95)}
-        </p>
-        <div className="meta">
-          <span className="views">{formatViews(video.views)} views</span>
-          <span className="date">{video.date}</span>
+    <Link to={`/video-player`} className="video-card-link">
+      <div className="video-card">
+        <div className="thumbnail">
+          <img src={video.thumbnail} alt={video.title} />
+          <span className="duration">{video.duration}</span>
+        </div>
+        <div className="details">
+          <h3 className="title">{video.title}</h3>
+          <p className="description">
+            {truncateDescription(video.description, 95)}
+          </p>
+          <div className="meta">
+            <span className="views">{formatViews(video.views)} views</span>
+            <span className="date">{video.date}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

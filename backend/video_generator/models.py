@@ -34,7 +34,7 @@ class DocumentProcessingJob(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     video_length = models.IntegerField(default=60) 
     language = models.TextField(null=True, blank=True)
-
+    processing_mode = models.TextField(null=True, blank=True)
 class VideoProcessingJob(models.Model):
     job_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     document_job = models.ForeignKey(DocumentProcessingJob, on_delete=models.CASCADE)

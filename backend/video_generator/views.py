@@ -10,17 +10,21 @@ import asyncio
 from .functionalities.video_synthesis import (
     generate_speech_and_viseme_from_text,
     generate_video_from_script,
+    generate_video_from_script_fast,
 )
 from .models import DocumentProcessingJob, VideoProcessingJob
 from .tasks import generate_script_task, process_video_task
 
 
+speed = ""
+
+
 @api_view(["POST"])
 def upload_document(request: HttpRequest):
     file = request.FILES.get("file")
-    video_length = request.data.get("video_length") 
+    video_length = request.data.get("video_length")
     language = request.data.get("language")
-
+    speed = request.data.get("processing_mode")
     # Validate input
     if not file or not file.name.endswith(".pdf"):
         return Response(
@@ -30,7 +34,18 @@ def upload_document(request: HttpRequest):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-    SUPPORTED_LANGUAGES = ["English", "Hindi", "Tamil", "Telugu", "Kannada", "Malayalam", "Marathi", "Punjabi", "Urdu", "Gujrati"]
+    SUPPORTED_LANGUAGES = [
+        "English",
+        "Hindi",
+        "Tamil",
+        "Telugu",
+        "Kannada",
+        "Malayalam",
+        "Marathi",
+        "Punjabi",
+        "Urdu",
+        "Gujrati",
+    ]
     if language not in SUPPORTED_LANGUAGES:
         return Response(
             {
@@ -46,11 +61,16 @@ def upload_document(request: HttpRequest):
 
         # Save the job details to the database (initial status: queued)
         job = DocumentProcessingJob.objects.create(
-            job_id=job_id, file=file, status="queued", video_length=video_length, language=language
+            job_id=job_id,
+            file=file,
+            status="queued",
+            video_length=video_length,
+            language=language,
+            processing_mode = speed
         )
 
         # Trigger the Celery task asynchronously
-        generate_script_task.delay(job.job_id, video_length, language)
+        generate_script_task.delay(job.job_id, video_length, language,speed)
 
         return Response(
             {
@@ -64,9 +84,13 @@ def upload_document(request: HttpRequest):
     except Exception as e:
         logging.error(f"Error processing upload: {str(e)}")
         return Response(
-            {"status": "error", "message": "An error occurred while processing the document."},
+            {
+                "status": "error",
+                "message": "An error occurred while processing the document.",
+            },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
 
 @api_view(["GET"])
 def check_document_status(request: HttpRequest, job_id: uuid.UUID):
@@ -216,14 +240,22 @@ def generate_video(request, job_id):
         viseme_data = generate_speech_and_viseme_from_text(
             job.script, audio_output_file, viseme_output_file, video_output_file
         )
-
-        asyncio.run(
-            generate_video_from_script(
-                script=job.script,
-                audio_output_file=audio_output_file,
-                video_output_file=video_output_file,
+        if job.processing_mode == "fast":
+            asyncio.run(
+                generate_video_from_script_fast(
+                    script=job.script,
+                    audio_output_file=audio_output_file,
+                    video_output_file=video_output_file,
+                )
             )
-        )
+        else:
+            asyncio.run(
+                generate_video_from_script(
+                    script=job.script,
+                    audio_output_file=audio_output_file,
+                    video_output_file=video_output_file,
+                )
+            )
 
         # Return the audio file as a response
         if os.path.exists(video_output_file):
