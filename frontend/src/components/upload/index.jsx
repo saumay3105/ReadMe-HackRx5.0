@@ -108,14 +108,15 @@ const FileUpload = () => {
           </ul>
         )}
       </div>
+      
+      <VideoLengthSelector setVideoLength={setVideoLength} />
+      <Language_Selector setSelectedLanguage={setSelectedLanguage} />
+      <ToastContainer />
       <div className="buttons">
         <button className="upload-button" onClick={handleUpload}>
           Start Generating
         </button>
       </div>
-      <VideoLengthSelector setVideoLength={setVideoLength} />
-      <Language_Selector setSelectedLanguage={setSelectedLanguage} />
-      <ToastContainer />
     </div>
   );
 };

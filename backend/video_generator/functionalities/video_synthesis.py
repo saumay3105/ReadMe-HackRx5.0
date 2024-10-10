@@ -21,7 +21,25 @@ unsplash_api_key = os.environ["UNSPLASH_API_KEY"]
 pixabay_api_key = os.environ["PIXABAY_API_KEY"]
 
 
+async def fetch_image_from_unsplash(session, keyword):
+    url = f"https://api.unsplash.com/search/photos?query={keyword}&client_id={unsplash_api_key}"
+    async with session.get(url) as response:
+        if response.status == 200:
+            data = await response.json()
+            if data["results"]:
+                return data["results"][0]["urls"]["small"]
+    return None
 
+
+async def fetch_image_from_pixabay(session, keyword):
+    url = f"https://pixabay.com/api/?key={pixabay_api_key}&q={keyword}&image_type=photo"
+    async with session.get(url) as response:
+        if response.status == 200:
+            data = await response.json()
+            if data["hits"]:
+                return data["hits"][0]["largeImageURL"]
+    return None
+    
 
 def generate_image_from_pollinations(prompt):
     """
