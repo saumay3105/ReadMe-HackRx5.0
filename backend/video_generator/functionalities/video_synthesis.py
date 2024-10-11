@@ -162,7 +162,7 @@ def generate_speech_and_viseme_from_text(
         )
 
     # Synthesize the text
-    result = synthesizer.speak_text(script)
+    result = synthesizer.speak_text_async(script).get()
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print(

@@ -180,7 +180,6 @@ function Quiz() {
 
   return (
     <>
-      <Header isLoggedIn={true} />
       <div className="quiz-container">
         <div className="quiz-header">
           <div className="quiz-question-number">
