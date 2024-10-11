@@ -88,7 +88,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/explore" element={<Explore videos={sampleVideos} />} />
-        <Route path="/video-player/:video_id :video_title" element={<VideoPlayer />} />
+        <Route path="/video-player/:video_id" element={<VideoPlayer />} />
         {/* <Route path="/editor" element={<Editor />} /> */}
       </Routes>
     </Router>
