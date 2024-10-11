@@ -19,8 +19,28 @@ urlpatterns = [
         name="submit_script",
     ),
     path(
-        "generate-video/<uuid:job_id>/",
+        "generate-video/<uuid:document_job_id>/",
         views.generate_video,
         name="generate-video",
+    ),
+    path(
+        "video-status/<uuid:video_job_id>/",
+        views.check_video_status,
+        name="check-video-status",
+    ),
+    path(
+        "publish-video/<uuid:video_job_id>/",
+        views.publish_video,
+        name="publish-video",
+    ),
+    path(
+        "video/all/",
+        views.get_all_published_videos,
+        name="get-all-videos"
+    ),
+    path(
+        "videos/<uuid:video_id>/",
+        views.get_published_video,
+        name="get-video"
     ),
 ]

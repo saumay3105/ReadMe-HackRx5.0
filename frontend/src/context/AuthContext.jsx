@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const checkLoginStatus = async () => {
     try {
       const token = localStorage.getItem("my-app-auth");
-      console.log("Access token:", token);
       const response = await fetch("http://127.0.0.1:8000/api/auth/user/", {
         method: "GET",
         credentials: "include", // Send cookies

@@ -1,15 +1,12 @@
 import os
 import json
-from typing import List
-from dotenv import load_dotenv, find_dotenv
+import google.generativeai as genai
 import azure.cognitiveservices.speech as speechsdk
 from moviepy.editor import TextClip, ColorClip, CompositeVideoClip, AudioFileClip
-import moviepy.editor as mpy
-import aiohttp
-import asyncio
 from moviepy.editor import ImageClip, concatenate_videoclips
 from PIL import Image
 from io import BytesIO
+import aiohttp
 import numpy as np
 from video_generator.functionalities.text_processing import generate_keywords
 from video_generator.functionalities.text_processing import generate_keywords_fast
@@ -18,10 +15,6 @@ import requests
 import random
 
 load_dotenv(find_dotenv())
-
-unsplash_api_key = os.environ["UNSPLASH_API_KEY"]
-pixabay_api_key = os.environ["PIXABAY_API_KEY"]
-
 
 unsplash_api_key = os.environ["UNSPLASH_API_KEY"]
 pixabay_api_key = os.environ["PIXABAY_API_KEY"]
@@ -104,8 +97,6 @@ async def fetch_images_as_clips_fast(keywords):
 
 
 # pollination
-
-
 async def fetch_images_as_clips(keywords):
     """
     Fetch images from pollinations.ai for the given keywords,
@@ -268,3 +259,27 @@ async def generate_video_from_script(
         print(f"Video saved as {video_output_file}")
     else:
         print("No images to generate video.")
+
+
+def generate_thumbnail(video_clip, video_duration, thumbnail_output):
+    frame = video_clip.get_frame(video_duration/2)
+    thumbnail_image = Image.fromarray(frame)
+    thumbnail_image.save(thumbnail_output)
+
+    return thumbnail_output
+
+
+def generate_video_details(script: str):
+    GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    llm_prompt = """
+    Given the script, generate a catchy title and description for my video.
+    
+    {script}
+    
+    Return me these details in just JSON format and nothing else.  
+    """
+
+    response = model.generate_content(llm_prompt)
+    return response.text

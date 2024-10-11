@@ -1,18 +1,20 @@
 import logging
 import os
 import uuid
-from django.http import FileResponse, HttpRequest
+from datetime import timedelta
+import json
+
 from django.conf import settings
+from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import asyncio
 from .functionalities.video_synthesis import (
-    generate_speech_and_viseme_from_text,
-    generate_video_from_script,
-    generate_video_from_script_fast,
+    generate_thumbnail,
+    generate_video_details
 )
-from .models import DocumentProcessingJob, VideoProcessingJob
+from moviepy.editor import VideoFileClip
+from .models import DocumentProcessingJob, VideoProcessingJob, Video
 from .tasks import generate_script_task, process_video_task
 
 
@@ -127,7 +129,7 @@ def check_document_status(request: HttpRequest, job_id: uuid.UUID):
 
 
 @api_view(["GET"])
-def get_generated_script(request: HttpRequest, job_id: uuid.UUID):
+def get_generated_script(request: HttpRequest, job_id: uuid.UUID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ):
     try:
         # Find the job and check if it is completed
         job = DocumentProcessingJob.objects.get(job_id=job_id)
@@ -188,13 +190,6 @@ def submit_script(request: HttpRequest, job_id):
         document_job.script = final_script
         document_job.save()
 
-        video_job = VideoProcessingJob.objects.create(
-            document_job=document_job, status="queued"
-        )
-
-        # Trigger background video generation process
-        # process_video_task.delay(video_job.job_id, final_script)
-
         return Response(
             {
                 "status": "success",
@@ -211,63 +206,174 @@ def submit_script(request: HttpRequest, job_id):
 
 
 @api_view(["GET"])
-def generate_video(request, job_id):
+def generate_video(request: HttpRequest, document_job_id):
     try:
         # Fetch the job using the provided job_id
-        job = DocumentProcessingJob.objects.get(job_id=job_id)
+        document_job = DocumentProcessingJob.objects.get(job_id=document_job_id)
 
-        if not job.script:
+        if not document_job.script:
             return Response(
                 {"error": "No script found for this job."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Set up paths to save audio and video
-        audio_output_file = os.path.join(
-            settings.MEDIA_ROOT, "temp_asset", f"{job_id}.wav"
-        )
-        video_output_file = os.path.join(
-            settings.MEDIA_ROOT, "generated_videos", f"{job_id}.mp4"
-        )
-        viseme_output_file = os.path.join(
-            settings.MEDIA_ROOT, "temp_asset", f"{job_id}_viseme.json"
+        # Create a unique job ID for the vidoe processing
+        video_job_id = uuid.uuid4()
+
+        # Save the job details to the database (initial status: queued)
+        video_job = VideoProcessingJob.objects.create(
+            job_id=video_job_id, document_job=document_job, video_preview=None, status="queue"
         )
 
-        # Ensure the temp_asset directory exists
-        os.makedirs(os.path.dirname(audio_output_file), exist_ok=True)
-
-        # Generate speech and viseme data
-        viseme_data = generate_speech_and_viseme_from_text(
-            job.script, audio_output_file, viseme_output_file, video_output_file
-        )
-        if job.processing_mode == "fast":
-            asyncio.run(
-                generate_video_from_script_fast(
-                    script=job.script,
-                    audio_output_file=audio_output_file,
-                    video_output_file=video_output_file,
-                )
-            )
-        else:
-            asyncio.run(
-                generate_video_from_script(
-                    script=job.script,
-                    audio_output_file=audio_output_file,
-                    video_output_file=video_output_file,
-                )
-            )
-
-        # Return the audio file as a response
-        if os.path.exists(video_output_file):
-            return FileResponse(open(video_output_file, "rb"), content_type="video/mp4")
+        process_video_task.delay(video_job.job_id, document_job.script, document_job.processing_mode)
 
         return Response(
-            {"error": "Failed to generate video."},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            {
+                "status": "success",
+                "message": "Video generation started.",
+                "video_job_id": video_job.job_id,
+            },
+            status=status.HTTP_202_ACCEPTED,
         )
 
     except DocumentProcessingJob.DoesNotExist:
         return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        print(e)
+        logging.error(f"An error occurred while generating the video: {e}")
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET"])
+def check_video_status(request, video_job_id):
+    try:
+        video_job = VideoProcessingJob.objects.get(job_id=video_job_id)
+
+        if video_job.status == "completed":
+            document_job = video_job.document_job
+            try:
+                video_details = generate_video_details(document_job)
+                video_details = json.loads(video_details)
+            except Exception as e:
+                video_details = {}
+
+            return Response(
+                {
+                    "status": video_job.status,
+                    "title": video_details.get("title", ""),
+                    "description": video_details.get("description", ""),
+                    "language": document_job.language,
+                    "date_created": document_job.created_at,
+                    "video_url": request.build_absolute_uri(video_job.video_preview.url),
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response({"status": video_job.status}, status=status.HTTP_200_OK)
+
+    except VideoProcessingJob.DoesNotExist:
+        return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(["POST"])
+def publish_video(request, video_job_id):
+    try:
+        # Fetch the video processing job
+        video_job = VideoProcessingJob.objects.get(job_id=video_job_id)
+
+        if video_job.status != "completed" or not video_job.video_preview:
+            return Response(
+                {"error": "Video has not been processed or preview is not available."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        video_file_path = video_job.video_preview.path
+        video_clip = VideoFileClip(video_file_path)
+        video_duration = video_clip.duration
+
+        thumbnail_output = os.path.join(
+            settings.MEDIA_ROOT, "thumbnails", f"{video_job_id}.jpg"
+        )
+        os.makedirs(os.path.dirname(thumbnail_output), exist_ok=True)
+
+        # Create video instance with video duration and thumbnail
+        generate_thumbnail(video_clip, video_duration, thumbnail_output)
+
+        # Create a new Video object and mark as published
+        video = Video.objects.create(
+            video_job=video_job,
+            title=request.data.get("title", "Untitled Video"),
+            description=request.data.get("description", ""),
+            video_file=video_job.video_preview,  # Use the preview video as final
+            duration=timedelta(seconds=video_duration),
+            thumbnail=thumbnail_output,
+            published=True
+        )
+
+        return Response(
+            {
+                "status": "success",
+                "message": "Video published successfully.",
+                "video_id": str(video.video_id),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    except VideoProcessingJob.DoesNotExist:
+        return Response({"error": "Video job not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logging.error(f"Error publishing video: {e}")
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(["GET"])
+def get_published_video(request, video_id):
+    try:
+        video = Video.objects.get(video_id=video_id, published=True)
+
+        video_data = {
+            "video_id": str(video.video_id),  # Ensure UUID is converted to string
+            "title": video.title,
+            "description": video.description,
+            "video_file": str(video.video_file.url),  # Convert to string
+            "thumbnail": str(video.thumbnail.url) if video.thumbnail else None,  # Handle thumbnail as URL or None
+            "duration": video.duration.total_seconds(),  # Convert timedelta to seconds
+            "created_at": video.created_at.isoformat(),  # Ensure datetime is serialized as ISO format
+        }
+
+
+        return Response({"video": video_data}, status=status.HTTP_200_OK)
+
+    except Video.DoesNotExist:
+        return Response({"error": "Video not found or is not published."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logging.error(f"Error fetching video: {e}")
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["GET"])
+def get_all_published_videos(request):
+    try:
+        # Get all published videos
+        videos = Video.objects.filter(published=True)
+
+        # Create a list of video data dictionaries
+        videos_data = [
+            {
+                "video_id": video.video_id,
+                "title": video.title,
+                "description": video.description,
+                "video_file": str(video.video_file.url),
+                "thumbnail": video.thumbnail,
+                "duration": video.duration,
+                "created_at": video.created_at,
+            }
+            for video in videos
+        ]
+
+        return Response({"videos": videos_data}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logging.error(f"Error fetching videos: {e}")
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

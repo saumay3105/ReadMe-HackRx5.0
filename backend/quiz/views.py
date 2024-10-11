@@ -1,4 +1,4 @@
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,8 +24,13 @@ def get_questions(request: HttpRequest, job_id):
         questions = generate_quiz_questions(script_text)
 
         # Return the generated questions as a JSON response
-        return JsonResponse({"questions": questions}, status=200)
+        return Response({"questions": questions}, status=200)
 
     except Exception as e:
         # Handle exceptions and return an error message
-        return JsonResponse({"error": str(e)}, status=500)
+        return Response({"error": str(e)}, status=500)
+
+
+@api_view(["POST"])
+def publish_video_and_quiz(request: HttpRequest):
+    pass

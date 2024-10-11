@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "../../components/Commons/Header";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import QuizPreview from "../../components/Quiz-Preview";
 import "./VideoPreview.css";
 
@@ -24,7 +25,6 @@ function VideoPreview() {
     // Retrieve jobId from local storage
     const storedJobId = localStorage.getItem("currentJobId");
     if (storedJobId) {
-      setJobId(storedJobId);
       handleGenerateVideo(storedJobId);
     } else {
       setError("Job ID not found in local storage.");
@@ -34,26 +34,58 @@ function VideoPreview() {
 
   const handleGenerateVideo = async (jobId) => {
     try {
-      const response = await axios.get(
+      const generateResponse = await axios.get(
         `http://localhost:8000/generate-video/${jobId}/`,
-        {
-          responseType: "blob", // Important for receiving video file as a blob
-        }
       );
 
-      // Create a URL for the received blob (video)
-      const videoBlobUrl = URL.createObjectURL(response.data);
-      setVideoData((prevData) => ({
-        ...prevData,
-        videoUrl: videoBlobUrl,
-      }));
-      setLoading(false); // Stop loading after video is received
+      const videoJobId = generateResponse.data.video_job_id;
+
+      localStorage.setItem("video_job_id", videoJobId);
+
+      pollVideoStatus(videoJobId);
     } catch (err) {
       console.error(err);
       setError("Failed to generate video. Please check the job ID.");
       setLoading(false);
     }
   };
+
+
+// Function to poll the video status
+const pollVideoStatus = (jobId) => {
+  const pollInterval = setInterval(async () => {
+    try {
+      const statusResponse = await axios.get(
+        `http://localhost:8000/video-status/${jobId}/`
+      );
+
+      status = statusResponse.data.status;
+
+      console.log(statusResponse.data)
+
+      if (status === "completed") {
+        // Video generation is completed, set video URL and stop polling
+        setVideoData(statusResponse.data);
+        setLoading(false);
+        clearInterval(pollInterval); // Stop polling
+      } else if (status === "failed") {
+        // Handle failure, show error message, and stop polling
+        setError("Video generation failed.");
+        setLoading(false);
+        clearInterval(pollInterval);
+
+      } else {
+        // If status is still pending, keep polling
+        console.log(`Video is still processing (status: ${status})`);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching video status.");
+      setLoading(false);
+      clearInterval(pollInterval); // Stop polling if there's an error
+    }
+  }, 5000); // Poll every 5 seconds (adjust as necessary)
+};
 
   const handleQuizGeneration = async () => {
     if (!jobId) {
@@ -87,18 +119,6 @@ function VideoPreview() {
     }
   };
 
-  useEffect(() => {
-    // Simulating API fetch
-    const fetchVideoData = async () => {
-      // Replace this with your actual API call
-      const response = await fetch("https://api.example.com/video");
-      const data = await response.json();
-      setVideoData(data);
-    };
-
-    fetchVideoData();
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setVideoData((prevData) => ({
@@ -107,19 +127,54 @@ function VideoPreview() {
     }));
   };
 
+  async function handlePublishVideo() {
+      const video_job_id = localStorage.getItem("video_job_id");
+if (!video_job_id) {
+    toast.error("Job ID not found. Cannot publish video.");
+    return;
+  }
+
+  try {
+    // Construct the API URL for publishing video
+    const publishUrl = `http://localhost:8000/publish-video/${video_job_id}/`;
+
+    // Create payload data
+    const payload = {
+      title: videoData.title,
+      description: videoData.description,
+    };
+
+    // Make the POST request to publish the video
+    const response = await axios.post(publishUrl, payload);
+
+    if (response.status === 201) {
+      // If the response is successful, display a success message
+      toast.success("Video published successfully!");
+      console.log("Published video:", response.data);
+      navigate(`/video-player`); // Navigate to the published video page
+    } else {
+      toast.error("Failed to publish video.");
+    }
+  } catch (error) {
+    // Handle any errors that occur during the publishing process
+    toast.error("Error publishing video: " + error.message);
+    console.error("Publish error:", error);
+  }
+  }
+
   return (
     <>
       <div className="video-preview-container">
         <div className="video-content">
           <h1>Video Preview</h1>
           <div className="video-container">
-            {error && <div className="error">{error}</div>}
+            {error && !videoData.video_url && <div className="error">{error}</div>}
             {loading ? (
               <div className="loading-message">
                 Your video is being generated, please wait...
               </div>
             ) : (
-              videoData.videoUrl && <video src={videoData.videoUrl} controls />
+              videoData.video_url && <video src={videoData.video_url} controls />
             )}
           </div>
 
@@ -170,12 +225,12 @@ function VideoPreview() {
               <span>Video URL:</span>
               <input
                 type="text"
-                value="asdjsafsghfsahfuiafnsafjsfsanjhdsadbdadsdsafas"
+                value=""
                 disabled
               />
             </div>
             <div>
-              <button className="btn">Publish</button>
+              <button className="btn" onClick={handlePublishVideo}>Publish</button>
             </div>
           </div>
         </div>
