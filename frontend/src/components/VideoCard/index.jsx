@@ -15,7 +15,7 @@ const VideoCard = ({ video }) => {
   };
 
   return (
-    <Link to={`/video-player`} className="video-card-link">
+    <Link to={`/video-player/${video.id}`} className="video-card-link">
       <div className="video-card">
         <div className="thumbnail">
           <img src={video.thumbnail} alt={video.title} />

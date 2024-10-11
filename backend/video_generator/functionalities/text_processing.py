@@ -32,16 +32,14 @@ def generate_script(docs_path: str, video_length: int, language: str) -> str:
             <step6>Review the entire monologue to make sure it includes all the important information from the original document.</step6>
             <step7>Don't include anything related to QR code or any link</step7>
             <step8>Return the script only. The response should start with the script and end with it</step8>
+            <step9>Response should not contain anything like Script: </step9>
         </prompt>
         """
 
     # Add video length to the prompt
     # Adding the video length to the prompt
 
-
-    llm_prompt += (
-        f"\n\n<!-- Please make the script approximately {video_length} seconds long. -->"
-    )
+    llm_prompt += f"\n\n<!-- Please make the script approximately {video_length} seconds long. -->"
 
     # Adding the language conditionally
     if language != "English":
@@ -58,13 +56,14 @@ def generate_keywords(text: str):
     llm_prompt = """
     Given the script, create a sequence of descriptive prompts for image generation that accurately reflect the key themes and concepts presented in the text. Each prompt should be vivid and evoke clear visual imagery, suitable for various artistic interpretations. Each prompt should contain only one phrase of max 10 words. The number of prompts should be flexible, depending on the richness of the text. As you progress through the document, provide each prompt in the order that corresponds with the content, ensuring that they collectively depict the narrative or themes in a cohesive manner. Output the prompts as a python list, ready for sequential use in a generative AI image generation API.
     """
-    
+
     response = model.generate_content(llm_prompt + text)
     start_idx = response.text.find("[")
     end_idx = response.text.rfind("]") + 1
     trimmed_response = response.text[start_idx:end_idx]
 
     return ast.literal_eval(trimmed_response)
+
 
 def generate_keywords_fast(text: str):
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
@@ -79,5 +78,7 @@ def generate_keywords_fast(text: str):
     trimmed_response = response.text[start_idx:end_idx]
 
     return ast.literal_eval(trimmed_response)
+
+
 def get_prompts_from_script(script: str) -> List[str]:
     return [script]
