@@ -9,10 +9,8 @@ from io import BytesIO
 import aiohttp
 import numpy as np
 from video_generator.functionalities.text_processing import generate_keywords
-from video_generator.functionalities.text_processing import generate_keywords_fast
 from dotenv import load_dotenv, find_dotenv
 import requests
-import random
 
 load_dotenv(find_dotenv())
 
@@ -68,6 +66,7 @@ def generate_image_from_pollinations(prompt):
     return None
 
 
+<<<<<<< Updated upstream
 async def fetch_images_as_clips_fast(keywords):
     """
     Fetch images for the given keywords, convert them to in-memory ImageClips,
@@ -97,6 +96,11 @@ async def fetch_images_as_clips_fast(keywords):
 
 
 # pollination
+=======
+
+
+\
+>>>>>>> Stashed changes
 async def fetch_images_as_clips(keywords):
     """
     Fetch images from pollinations.ai for the given keywords,
@@ -109,11 +113,9 @@ async def fetch_images_as_clips(keywords):
         img_data = generate_image_from_pollinations(keyword)
 
         if img_data:
-            img = Image.open(BytesIO(img_data)).convert("RGB")
+            img = Image.open(BytesIO(img_data)).convert('RGB')
             img_np = np.array(img)  # Convert PIL image to NumPy array
-            img_clip = ImageClip(img_np).set_duration(
-                5
-            )  # Set duration of each image to 5 seconds
+            img_clip = ImageClip(img_np).set_duration(5)  # Set duration of each image to 5 seconds
             clips.append(img_clip)
             print(f"Generated and added image for keyword: {keyword}")
         else:
@@ -171,48 +173,6 @@ def generate_speech_and_viseme_from_text(
     return viseme_data
 
 
-async def generate_video_from_script_fast(
-    script: str, audio_output_file: str, video_output_file: str
-):
-    """
-    Fetch images for the given keywords and generate a video that matches the length of the audio.
-    """
-    audio_clip = AudioFileClip(audio_output_file)
-    audio_duration = audio_clip.duration  # Get the duration of the audio in seconds
-    keywords = generate_keywords_fast(script)
-    clips = await fetch_images_as_clips_fast(keywords)
-
-    if clips:
-        num_clips = len(clips)
-        # Calculate the duration each image should stay on screen
-        clip_duration = audio_duration / num_clips
-
-        landscape_clips = []
-        for clip in clips:
-            img = clip.get_frame(0)  # Get a frame from the clip
-            pil_img = Image.fromarray(img)  # Convert to a PIL Image
-
-            # Resize the image to landscape (1280x720) using LANCZOS
-            resized_img = pil_img.resize((1280, 720), Image.Resampling.LANCZOS)
-
-            # Convert the resized image back to a NumPy array
-            resized_array = np.array(resized_img)
-
-            # Create a new ImageClip from the resized image with the calculated duration
-            landscape_clip = ImageClip(resized_array).set_duration(clip_duration)
-            landscape_clips.append(landscape_clip)
-
-        # Concatenate the resized landscape clips into a single video
-        video_clip = concatenate_videoclips(landscape_clips, method="compose")
-
-        # Add the audio to the video
-        final_video = video_clip.set_audio(audio_clip)
-        final_video.write_videofile(video_output_file, fps=24)
-        print(f"Video saved as {video_output_file}")
-    else:
-        print("No images to generate video.")
-
-
 async def generate_video_from_script(
     script: str, audio_output_file: str, video_output_file: str
 ):
@@ -221,10 +181,10 @@ async def generate_video_from_script(
     """
     audio_clip = AudioFileClip(audio_output_file)
     audio_duration = audio_clip.duration  # Get the duration of the audio in seconds
-
+    
     # Generate keywords from the script
     keywords = generate_keywords(script)
-
+    
     # Fetch image clips based on the keywords
     clips = await fetch_images_as_clips(keywords)
 
@@ -253,7 +213,7 @@ async def generate_video_from_script(
 
         # Add the audio to the video
         final_video = video_clip.set_audio(audio_clip)
-
+        
         # Save the final video with the specified output file name
         final_video.write_videofile(video_output_file, fps=24)
         print(f"Video saved as {video_output_file}")
