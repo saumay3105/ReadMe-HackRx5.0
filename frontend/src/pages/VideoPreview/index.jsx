@@ -24,8 +24,10 @@ function VideoPreview() {
   useEffect(() => {
     // Retrieve jobId from local storage
     const storedJobId = localStorage.getItem("currentJobId");
+    setJobId(storedJobId)
     if (storedJobId) {
       handleGenerateVideo(storedJobId);
+      
     } else {
       setError("Job ID not found in local storage.");
       setLoading(false);
