@@ -3,11 +3,13 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import { useControls } from "leva";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { useContext } from "react";
+import { SpeakingContext } from "../contexts/AvatarState";
 
 const corresponding = {
   A: "jawOpen",
   B: "mouthFunnel",
-  E: "mouthClose",
+  E: "Basis",
   F: "mouthPucker",
   G: "mouthShrugUpper",
   L: "tongueOut",
@@ -18,8 +20,8 @@ const corresponding = {
   W: "cheekPuff",
 };
 
-
 export function Avatar(props) {
+  const { speaking, setSpeaking } = useContext(SpeakingContext);
   let {
     playAudio,
     script,
@@ -44,23 +46,18 @@ export function Avatar(props) {
     script = "incorrect";
     playAudio = true;
   }
-  setTimeout(() => {}, 2000)
-  
+
   const audio = useMemo(() => new Audio(`/audios/${script}.mp3`), [script]);
   const jsonFile = useLoader(THREE.FileLoader, `audios/${script}.json`);
   const lipsync = JSON.parse(jsonFile);
   const initialPosition = useRef(new THREE.Vector3());
   const group = useRef();
 
-
   useEffect(() => {
     if (group.current) {
       initialPosition.current.copy(group.current.position);
     }
   }, []);
-
-//   useEffect(()=>{
-//  [props.isCorrect])
 
   useFrame(() => {
     const currentAudioTime = audio.currentTime;
@@ -198,6 +195,8 @@ export function Avatar(props) {
     }
   });
 
+  useEffect(() => { if (speaking) { audio.play() } }, [speaking]);
+
   return (
     <group {...props} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
@@ -255,8 +254,12 @@ export function Avatar(props) {
         geometry={nodes.Wolf3D_Teeth.geometry}
         material={materials.Wolf3D_Teeth}
         skeleton={nodes.Wolf3D_Teeth.skeleton}
-        morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary}
-        morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
+      />
+      <skinnedMesh
+        name="Wolf3D_Eye_Lids"
+        geometry={nodes.Wolf3D_Eye_Lids.geometry}
+        material={materials.Wolf3D_Eye_Lids}
+        skeleton={nodes.Wolf3D_Eye_Lids.skeleton}
       />
     </group>
   );

@@ -6,12 +6,13 @@ export const Experience = ({isCorrect}) => {
     <>
       <OrbitControls />
       <Avatar position={[0, -3, 5]} scale={2} isCorrect={isCorrect}/>
-      <Environment preset="sunset" />
+      <Environment preset="sunset"/>
+    
       
       <mesh position={[0, 0, -0.1]}>
         <planeGeometry args={[100, 100]} />
         <meshBasicMaterial color="#ececec" /> 
-      </mesh>
+      </mesh> 
     </>
   );
 };
