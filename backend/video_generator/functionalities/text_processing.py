@@ -65,13 +65,37 @@ def generate_keywords(text: str):
     return ast.literal_eval(trimmed_response)
 
 
+
+
+
 def generate_keywords_fast(text: str):
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     llm_prompt = """
-    Given the extracted content from a document, generate 20 one or max three words keywords for use as prompts in image generation from the provided text. Each phrase should be vivid and descriptive, evoking clear visual imagery while avoiding any company names, trademarked terms, or specific generative AI model names. The phrases should be suitable for a variety of creative concepts and should inspire diverse artistic interpretations. Output should be a python list with no name just list
+    Given the script, create a JSON output that organizes the key themes and concepts presented in the text into a structured format. Each entry in the JSON array should include a 'slide_title', 'bullet_points', and 'keywords' field. 
+
+    - 'slide_title' should contain a brief title for the slide.
+    - 'bullet_points' should summarize the main ideas in concise bullet points.
+    - 'keywords' should contain relevant keywords associated with the slide, suitable for searching images in an image library API.
+
+    The output format should be:
+    [
+      {
+        "slide_title": "Title of the slide",
+        "bullet_points": [
+          "Key point 1",
+          "Key point 2",
+          "Key point 3"
+        ],
+        "keyword": "keyword"
+      },
+      ...
+    ]
+    
+    Ensure that the titles, bullet points, and keywords reflect the most important information from the script. Provide the output as a JSON structure.
     """
+
     response = model.generate_content(llm_prompt + text)
     start_idx = response.text.find("[")
     end_idx = response.text.rfind("]") + 1
