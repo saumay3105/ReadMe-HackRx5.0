@@ -33,14 +33,7 @@ urlpatterns = [
         views.publish_video,
         name="publish-video",
     ),
-    path(
-        "video/all/",
-        views.get_all_published_videos,
-        name="get-all-videos"
-    ),
-    path(
-        "videos/<uuid:video_id>/",
-        views.get_published_video,
-        name="get-video"
-    ),
+    path("video/all/", views.get_all_published_videos, name="get-all-videos"),
+    path("videos/<uuid:video_id>/", views.get_published_video, name="get-video"),
+    path("generate-slides/", views.generate_slides, name="generate_slides"),
 ]
