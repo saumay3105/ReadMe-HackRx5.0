@@ -54,8 +54,8 @@ def generate_keywords(text: str):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     llm_prompt = """
-    Given the script, create a sequence of descriptive prompts for image generation that accurately reflect the key themes and concepts presented in the text. Each prompt should be vivid and evoke clear visual imagery, suitable for various artistic interpretations. Each prompt should contain only one phrase of max 10 words. The number of prompts should be flexible, depending on the richness of the text. As you progress through the document, provide each prompt in the order that corresponds with the content, ensuring that they collectively depict the narrative or themes in a cohesive manner. Output the prompts as a python list, ready for sequential use in a generative AI image generation API.
-    """
+        Given the script, divide the text into logical chunks such that each chunk represents 3-5 seconds of content. For each chunk, provide the most general and straightforward image generation prompt in the form of a phrase of maximum 5 words that capture the core visual theme or concept of that part of the script. The keywords should avoid ambiguous or complex terms and focus on general, easily interpretable visuals for example-(man in hospital, car accident). I basically want simplest and general words only. Output the keywords as a python list, ready for sequential use in a generative AI image generation API. there shouldn't be any abstract thing in the prompt.. just ensure it has nouns and physical things all the time.
+        """
 
     response = model.generate_content(llm_prompt + text)
     start_idx = response.text.find("[")

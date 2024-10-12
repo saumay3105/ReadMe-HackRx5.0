@@ -12,10 +12,10 @@ function App() {
   }
   return (
     <div className="App">
-      {/* <AppRoutes /> */}
-      <SlideVideo/>
+      <AppRoutes />
+     
     </div>
   );
 }
 
-export default App;
+export default App
