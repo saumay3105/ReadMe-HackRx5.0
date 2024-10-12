@@ -225,7 +225,6 @@ async def generate_video_from_script(
     script: str,
     audio_output_file: str,
     video_output_file: str,
-    background_music_file: str,
 ):
     """
     Fetch images for the given keywords and generate a video that matches the length of the audio,
