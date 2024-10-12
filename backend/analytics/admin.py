@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Video, Quiz, Analytics
 
-# Register your models here.
+admin.site.register(Video)
+admin.site.register(Quiz)
+admin.site.register(Analytics)
