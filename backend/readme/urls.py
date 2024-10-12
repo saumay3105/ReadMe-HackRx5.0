@@ -25,4 +25,5 @@ urlpatterns = [
     path("", include("video_generator.urls")),
     path("", include("quiz.urls")),
     path("", include("users.urls")),
+    path('analytics/', include('analytics.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
