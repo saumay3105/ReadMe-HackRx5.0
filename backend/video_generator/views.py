@@ -359,15 +359,15 @@ def get_all_published_videos(request):
 
         # Create a list of video data dictionaries
         videos_data = [
-            {
-                "video_id": video.video_id,
-                "title": video.title,
-                "description": video.description,
-                "video_file": str(video.video_file.url),
-                "thumbnail": video.thumbnail,
-                "duration": video.duration,
-                "created_at": video.created_at,
-            }
+        {
+            "video_id": str(video.video_id),  # Ensure UUID is converted to string
+            "title": video.title,
+            "description": video.description,
+            "video_file": str(video.video_file.url),  # Convert to string
+            "thumbnail": str(video.thumbnail.url) if video.thumbnail else None,  # Handle thumbnail as URL or None
+            "duration": video.duration.total_seconds(),  # Convert timedelta to seconds
+            "created_at": video.created_at.isoformat(),  # Ensure datetime is serialized as ISO format
+        }
             for video in videos
         ]
 

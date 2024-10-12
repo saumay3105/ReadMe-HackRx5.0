@@ -152,8 +152,12 @@ def generate_speech_and_viseme_from_text(
             }
         )
 
+    synthesizer.viseme_received.connect(viseme_cb)
+
     # Synthesize the text
     result = synthesizer.speak_text_async(script).get()
+
+    print("viseme_data", viseme_data)
 
     if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
         print(
