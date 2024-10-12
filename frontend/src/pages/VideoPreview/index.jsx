@@ -3,8 +3,11 @@ import axios from "axios";
 import Header from "../../components/Commons/Header";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+<<<<<<< Updated upstream
 import 'react-toastify/dist/ReactToastify.css';
 import QuizPreview from "../../components/Quiz-Preview";
+=======
+>>>>>>> Stashed changes
 import "./VideoPreview.css";
 
 function VideoPreview() {
@@ -17,9 +20,7 @@ function VideoPreview() {
     videoUrl: "",
   });
   const [loading, setLoading] = useState(true); // Start loading initially
-  const [quizLoading, setQuizLoading] = useState(false); // For quiz generation loading
   const [error, setError] = useState("");
-  const [questions, setQuestions] = useState();
 
   useEffect(() => {
     // Retrieve jobId from local storage
@@ -94,28 +95,22 @@ const pollVideoStatus = (jobId) => {
     }
 
     try {
-      setQuizLoading(true); // Start loading for quiz generation
       toast.success("Generating questions. Please wait.");
       const questionsResponse = await axios.post(
         `http://127.0.0.1:8000/generate-questions/${jobId}/`
       );
 
-      let questions = JSON.parse(questionsResponse.data.questions);
-
-      console.log(questions);
+      const questions = questionsResponse.data.questions;
 
       if (questions) {
         localStorage.setItem("quizQuestions", JSON.stringify(questions));
-        setQuestions(questions);
-        // Stop the quiz loading animation
-        setQuizLoading(false);
+        toast.success("Questions generated successfully.");
+        navigate("/quiz");
       } else {
-        setQuizLoading(false);
         toast.error("Failed to generate quiz questions.");
       }
     } catch (error) {
       toast.error("Failed to generate quiz questions: " + error.message);
-      setQuizLoading(false);
     }
   };
 
@@ -177,23 +172,9 @@ if (!video_job_id) {
               videoData.video_url && <video src={videoData.video_url} controls />
             )}
           </div>
-
-          {!quizLoading && !questions && (
-            <button
-              className="video-preview-btn"
-              onClick={handleQuizGeneration}
-            >
-              Get Quiz
-            </button>
-          )}
-
-          {quizLoading && (
-            <div className="loading-message">
-              Generating quiz, please wait...
-            </div>
-          )}
-
-          {questions && <QuizPreview questions={questions} />}
+          <button className="video-preview-btn" onClick={handleQuizGeneration}>
+            Get Quiz
+          </button>
         </div>
 
         <div className="video-preview-sidebar">

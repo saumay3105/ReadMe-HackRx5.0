@@ -14,7 +14,7 @@ from .functionalities.video_synthesis import generate_speech_and_viseme_from_tex
 
 
 @shared_task
-def generate_script_task(job_id: uuid.UUID, video_length: int,language:str,speed:str):
+def generate_script_task(job_id: uuid.UUID, video_length: int,language:str):
     job = DocumentProcessingJob.objects.get(job_id=job_id)
     job.status = "processing"
     job.save()
