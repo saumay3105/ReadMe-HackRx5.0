@@ -20,7 +20,7 @@ const corresponding = {
 
 
 export function Avatar(props) {
-  const {
+  let {
     playAudio,
     script,
     headFollow,
@@ -33,21 +33,34 @@ export function Avatar(props) {
     morphTargetSmoothing: 0.5,
     script: {
       value: "introduction",
-      options: ["introduction", "summary"],
+      options: ["introduction", "summary", "correct", "incorrect"],
     },
   });
 
+  if (props.isCorrect === true) {
+    script = "correct";
+    playAudio = true;
+  } else if (props.isCorrect === false) {
+    script = "incorrect";
+    playAudio = true;
+  }
+  setTimeout(() => {}, 2000)
+  
   const audio = useMemo(() => new Audio(`/audios/${script}.mp3`), [script]);
   const jsonFile = useLoader(THREE.FileLoader, `audios/${script}.json`);
   const lipsync = JSON.parse(jsonFile);
   const initialPosition = useRef(new THREE.Vector3());
   const group = useRef();
 
+
   useEffect(() => {
     if (group.current) {
       initialPosition.current.copy(group.current.position);
     }
   }, []);
+
+//   useEffect(()=>{
+//  [props.isCorrect])
 
   useFrame(() => {
     const currentAudioTime = audio.currentTime;
