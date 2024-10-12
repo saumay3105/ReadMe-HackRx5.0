@@ -53,7 +53,7 @@ def generate_keywords(text: str):
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
-    
+
     llm_prompt = """
         Given the script, divide the text into logical chunks such that each chunk represents 3 seconds of content. For each chunk, provide the most general and straightforward image generation prompt in the form of a phrase of maximum 5 words that capture the core visual theme or concept of that part of the script. The keywords should avoid ambiguous or complex terms and focus on general, easily interpretable visuals for example-(man in hospital, car accident). I basically want simplest and general words only. Output the keywords as a python list, ready for sequential use in a generative AI image generation API. there shouldn't be any abstract thing in the prompt.. just ensure it has nouns and physical things all the time.
         """
@@ -65,19 +65,16 @@ def generate_keywords(text: str):
     return ast.literal_eval(trimmed_response)
 
 
-
-
-
 def generate_keywords_fast(text: str):
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     llm_prompt = """
-    Given the script, create a JSON output that organizes the key themes and concepts presented in the text into a structured format. Each entry in the JSON array should include a 'slide_title', 'bullet_points', and 'keywords' field. 
+    Given the script, create a JSON output that organizes the key themes and concepts presented in the text into a structured format. Each entry in the JSON array should include a 'slide_title', 'bullet_points', and 'keyword' field. 
 
     - 'slide_title' should contain a brief title for the slide.
     - 'bullet_points' should summarize the main ideas in concise bullet points.
-    - 'keywords' should contain relevant keywords associated with the slide, suitable for searching images in an image library API.
+    - 'keyword' should contain a relevant prompt associated with the slide, suitable for generating generative images using ai image generator.
 
     The output format should be:
     [
@@ -93,7 +90,7 @@ def generate_keywords_fast(text: str):
       ...
     ]
     
-    Ensure that the titles, bullet points, and keywords reflect the most important information from the script. Provide the output as a JSON structure.
+    Ensure that the titles, bullet points, and keyword reflect the most important information from the script. Provide the output as a JSON structure.
     """
 
     response = model.generate_content(llm_prompt + text)

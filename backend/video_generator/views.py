@@ -9,28 +9,38 @@ from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .functionalities.video_synthesis import generate_thumbnail, generate_video_details,generate_keywords_fast
+from .functionalities.video_synthesis import (
+    generate_thumbnail,
+    generate_video_details,
+    generate_keywords_fast,
+    generate_image_from_pollinations,
+)
 from moviepy.editor import VideoFileClip
 from .models import DocumentProcessingJob, VideoProcessingJob, Video
 from .tasks import generate_script_task, process_video_task
 
 
-
+@api_view(["GET", "POST"])
 def generate_slides(request: HttpRequest):
     try:
         # Get the text input from the request query parameters
-        script_text = request.GET.get("script", "")
+        script_text = request.data.get("script", "")
         if not script_text:
             return Response({"error": "Script text is required."}, status=400)
 
         # Call the previously defined function to generate the slides JSON
         slides_json = generate_keywords_fast(script_text)
+        for slide in slides_json:
+            keyword = slide.get("keyword")
+            path = generate_image_from_pollinations(prompt=keyword)
+            slide["keyword"] = path
 
         # Return the JSON response to the frontend
         return Response({"slides": slides_json}, status=200)
     except Exception as e:
         # Return an error response in case of exceptions
         return Response({"error": str(e)}, status=500)
+
 
 @api_view(["POST"])
 def upload_document(request: HttpRequest):
@@ -351,10 +361,10 @@ def get_published_video(request, video_id):
         video = Video.objects.get(video_id=video_id, published=True)
 
         video_data = {
-            "video_id": str(video.video_id),  
+            "video_id": str(video.video_id),
             "title": video.title,
             "description": video.description,
-            "video_file": str(video.video_file.url),  
+            "video_file": str(video.video_file.url),
             "thumbnail": (
                 str(video.thumbnail.url) if video.thumbnail else None
             ),  # Handle thumbnail as URL or None
@@ -382,15 +392,17 @@ def get_all_published_videos(request):
 
         # Create a list of video data dictionaries
         videos_data = [
-        {
-            "video_id": str(video.video_id),  # Ensure UUID is converted to string
-            "title": video.title,
-            "description": video.description,
-            "video_file": str(video.video_file.url),  # Convert to string
-            "thumbnail": str(video.thumbnail.url) if video.thumbnail else None,  # Handle thumbnail as URL or None
-            "duration": video.duration.total_seconds(),  # Convert timedelta to seconds
-            "created_at": video.created_at.isoformat(),  # Ensure datetime is serialized as ISO format
-        }
+            {
+                "video_id": str(video.video_id),  # Ensure UUID is converted to string
+                "title": video.title,
+                "description": video.description,
+                "video_file": str(video.video_file.url),  # Convert to string
+                "thumbnail": (
+                    str(video.thumbnail.url) if video.thumbnail else None
+                ),  # Handle thumbnail as URL or None
+                "duration": video.duration.total_seconds(),  # Convert timedelta to seconds
+                "created_at": video.created_at.isoformat(),  # Ensure datetime is serialized as ISO format
+            }
             for video in videos
         ]
 

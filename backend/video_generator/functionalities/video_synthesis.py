@@ -60,15 +60,46 @@ async def fetch_image_bytes(session, img_url):
 
 
 # Generate Video using Pollination
-def generate_image_from_pollinations(prompt):
+def generate_image_from_pollinations(prompt, save_folder="media/generated_images"):
     """
-    Fetch image bytes from pollinations.ai based on the prompt.
+    Fetch image bytes from pollinations.ai based on the prompt and save the image
+    in a separate folder with the name of the keyword (prompt).
+
+    Args:
+        prompt (str): The keyword used to generate the image.
+        save_folder (str): The folder where images will be saved (default: "generated_images").
+
+    Returns:
+        str: The file path of the saved image if successful, None otherwise.
     """
+    # Ensure the save folder exists, create it if not
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+
+    # Define the URL to fetch the image
     url = f"https://pollinations.ai/p/{prompt}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.content  # Return image bytes
-    return None
+
+    try:
+        # Send a request to fetch the image bytes
+        response = requests.get(url)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Define the image file name and path (save as prompt name)
+            image_file_path = os.path.join(save_folder, f"{prompt}.jpg")
+
+            # Save the image bytes to a file
+            with open(image_file_path, "wb") as img_file:
+                img_file.write(response.content)
+
+            print(f"Image saved at: {image_file_path}")
+            return image_file_path  # Return the file path of the saved image
+        else:
+            print(f"Failed to fetch image for prompt: {prompt}")
+            return None
+    except requests.RequestException as e:
+        print(f"Error fetching image for prompt: {prompt}. Error: {str(e)}")
+        return None
 
 
 async def fetch_images_as_clips_fast(keywords):
@@ -259,8 +290,6 @@ async def generate_video_from_script(
         # Concatenate the resized landscape clips into a single video
         video_clip = concatenate_videoclips(landscape_clips, method="compose")
 
-       
-       
         # Add the audio to the video
         final_video = video_clip.set_audio(audio_clip)
         # Save the final video with the specified output file name
@@ -268,7 +297,6 @@ async def generate_video_from_script(
         print(f"Video saved as {video_output_file}")
     else:
         print("No images to generate video.")
-
 
 
 def generate_thumbnail(video_clip, video_duration, thumbnail_output):
