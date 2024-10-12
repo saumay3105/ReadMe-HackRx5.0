@@ -15,7 +15,7 @@ const VideoCard = ({ video }) => {
     <Link to={`/video-player/${video.video_id}`} className="video-card-link">
       <div className="video-card">
         <div className="thumbnail">
-          <img src="https://cms-api-in.myhealthcare.co/image/20220910103120.jpeg "alt={video.title} />
+          <img src="https://medicircle.in/uploads/2020/february2020/bajaj_finserv_edit.jpg "alt={video.title} />
           <span className="duration">{formatDuration(video.duration)} min</span>
         </div>
         <div className="details">

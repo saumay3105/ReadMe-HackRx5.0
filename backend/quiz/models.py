@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.video_generator.models import Video
+from video_generator.models import Video
 
 
 class Quiz(models.Model):
@@ -13,7 +13,7 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     question_id = models.AutoField(primary_key=True)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     question_text = models.TextField()
     correct_option = models.CharField(max_length=255)  # Storing the correct option text
     explanation = models.TextField()
@@ -21,13 +21,17 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
+
 class Option(models.Model):
     option_id = models.AutoField(primary_key=True)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='options')
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name="options"
+    )
     option_text = models.CharField(max_length=255)
 
     def __str__(self):
         return self.option_text
+
 
 # Result model to store quiz results
 class Result(models.Model):

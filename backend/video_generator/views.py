@@ -15,7 +15,6 @@ from .models import DocumentProcessingJob, VideoProcessingJob, Video
 from .tasks import generate_script_task, process_video_task
 
 
-speed = ""
 
 def generate_slides(request: HttpRequest):
     try:

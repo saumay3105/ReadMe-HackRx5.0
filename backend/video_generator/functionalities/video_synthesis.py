@@ -2,8 +2,10 @@ import os
 import json
 import google.generativeai as genai
 import azure.cognitiveservices.speech as speechsdk
-from moviepy.editor import TextClip, ColorClip, CompositeVideoClip, AudioFileClip
-from moviepy.editor import ImageClip, concatenate_videoclips
+from moviepy.editor import TextClip, ColorClip
+from moviepy.editor import CompositeAudioClip, AudioFileClip
+from moviepy.editor import ImageClip, concatenate_videoclips, VideoFileClip
+from django.conf import settings
 from PIL import Image
 from io import BytesIO
 import aiohttp
@@ -13,8 +15,10 @@ from video_generator.functionalities.text_processing import generate_keywords_fa
 from dotenv import load_dotenv, find_dotenv
 import requests
 import random
+import pydub
 
 load_dotenv(find_dotenv())
+from pydub import AudioSegment
 
 unsplash_api_key = os.environ["UNSPLASH_API_KEY"]
 pixabay_api_key = os.environ["PIXABAY_API_KEY"]
@@ -218,10 +222,14 @@ async def generate_video_from_script_fast(
 
 
 async def generate_video_from_script(
-    script: str, audio_output_file: str, video_output_file: str
+    script: str,
+    audio_output_file: str,
+    video_output_file: str,
+    background_music_file: str,
 ):
     """
-    Fetch images for the given keywords and generate a video that matches the length of the audio.
+    Fetch images for the given keywords and generate a video that matches the length of the audio,
+    with a background music track playing softly, and append an end video at the end.
     """
     audio_clip = AudioFileClip(audio_output_file)
     audio_duration = audio_clip.duration  # Get the duration of the audio in seconds
@@ -234,8 +242,10 @@ async def generate_video_from_script(
 
     if clips:
         num_clips = len(clips)
+        max_frame_duration = 5  # Set a maximum frame duration (in seconds)
+
         # Calculate the duration each image should stay on screen based on the audio length
-        clip_duration = audio_duration / num_clips
+        clip_duration = min(audio_duration / num_clips, max_frame_duration)
 
         landscape_clips = []
         for clip in clips:
@@ -255,18 +265,41 @@ async def generate_video_from_script(
         # Concatenate the resized landscape clips into a single video
         video_clip = concatenate_videoclips(landscape_clips, method="compose")
 
+        # Load and adjust the background music
+        background_music = AudioSegment.from_file(background_music_file)
+        background_music = background_music - 20  # Lower the volume by 20dB for subtle background
+        background_music = background_music.speedup(playback_speed=0.7)  # Slow down the background music
+
+        # Export the background music as a temporary file to be used in moviepy
+        temp_background_music_file = "background.mp3"
+        background_music.export(temp_background_music_file, format="mp3")
+
+        # Load the background music as an AudioFileClip
+        background_music_clip = AudioFileClip(temp_background_music_file).set_duration(audio_duration)
+
+        # Mix the background music with the main audio
+        final_audio = CompositeAudioClip([audio_clip, background_music_clip.volumex(0.5)])
+
         # Add the audio to the video
-        final_video = video_clip.set_audio(audio_clip)
+        final_video = video_clip.set_audio(final_audio)
+
+        # Load the end.mp4 video
+        end_clip_path = "end.mp4"
+        end_clip = VideoFileClip(end_clip_path)
+
+        # Concatenate the main video with the end video
+        final_video_with_end = concatenate_videoclips([final_video, end_clip])
 
         # Save the final video with the specified output file name
-        final_video.write_videofile(video_output_file, fps=24)
+        final_video_with_end.write_videofile(video_output_file, fps=24)
         print(f"Video saved as {video_output_file}")
     else:
         print("No images to generate video.")
 
 
+
 def generate_thumbnail(video_clip, video_duration, thumbnail_output):
-    frame = video_clip.get_frame(video_duration/2)
+    frame = video_clip.get_frame(video_duration / 2)
     thumbnail_image = Image.fromarray(frame)
     thumbnail_image.save(thumbnail_output)
 
